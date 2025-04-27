@@ -12,7 +12,7 @@ all: directory $(NAME)
 directory:
 	@mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: srcs/%.cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 	@rm -f compile_commands.json
 
