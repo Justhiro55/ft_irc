@@ -2,28 +2,31 @@ NAME = ircserv
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
-SRC = main.cpp
+SRC_DIR = src
+SRC = main.cpp \
+      server.cpp
 
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
-all: directory $(NAME)
+all: $(NAME)
 
-directory:
+$(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/%.o: srcs/%.cpp
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
-	@rm -f compile_commands.json
+$(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp includes/irc.hpp | $(OBJ_DIR)
+	@$(CXX) $(CXXFLAGS) -I./includes -c $< -o $@
+
+$(OBJ_DIR)/server.o: $(SRC_DIR)/server.cpp includes/irc.hpp | $(OBJ_DIR)
+	@$(CXX) $(CXXFLAGS) -I./includes -c $< -o $@
 
 $(NAME): $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@printf "\e[38;5;82m\n  ${NAME} Compiled🚀\e[0m\n\n"
 
 clean:
-	@rm -f $(OBJ)
+	@rm -rf $(OBJ_DIR)
 	@rm -f compile_commands.json
-	@rmdir $(OBJ_DIR) 2> /dev/null || true
 
 fclean: clean
 	@rm -f $(NAME)
@@ -31,4 +34,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re help
+.PHONY: all clean fclean re
