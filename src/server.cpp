@@ -8,13 +8,21 @@ void die_with_error(const char* msg)
 
 int create_socket()
 {
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0)
     {
         std::cerr << "socket() failed" << std::endl;
         return -1;
     }
-    return sockfd;
+
+    // set socket option to reuse address to prevent TIME_WAIT issues
+    int yes = 1;
+	if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)) < 0) {
+        std::cerr << "setsockopt() failed" << std::endl;
+        close(sock);
+        exit(EXIT_FAILURE);
+    }
+    return sock;
 }
 
 void handle_tcp_client(int client_sock)
