@@ -1,7 +1,9 @@
 #include "../includes/irc.hpp"
 
-void die_with_error(const char* msg)
+void die_with_error(const char* msg, int fd)
 {
+    if (fd > 2)
+        close(fd);
     perror(msg);
     exit(EXIT_FAILURE);
 }
@@ -10,18 +12,12 @@ int create_socket()
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
-    {
-        std::cerr << "socket() failed" << std::endl;
-        return -1;
-    }
+        die_with_error("socket() failed", sock);
 
     // set socket option to reuse address to prevent TIME_WAIT issues
-    int yes = 1;
-	if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)) < 0) {
-        std::cerr << "setsockopt() failed" << std::endl;
-        close(sock);
-        exit(EXIT_FAILURE);
-    }
+    int yes = true;
+	if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)) < 0)
+        die_with_error("setsockopt() failed", sock);
     return sock;
 }
 

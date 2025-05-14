@@ -20,16 +20,10 @@ int main(int argc, char** argv)
     addr.sin_port = htons(port); // port number
 
     if (bind(server_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-    {
-        close(server_fd);
-        die_with_error("bind() failed");
-    }
+        die_with_error("bind() failed", server_fd);
 
     if (listen(server_fd, MAX_PENDING) < 0)
-    {
-        close(server_fd);
-        die_with_error("listen() failed");
-    }
+        die_with_error("listen() failed", server_fd);
 
     std::cout << "Listening on port " << port << "..." << std::endl;
 
@@ -40,17 +34,17 @@ int main(int argc, char** argv)
         int client_sock = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
         if (client_sock < 0)
         {
-            close(server_fd);
-            die_with_error("accept() failed");
+            close(client_sock);
+            die_with_error("accept() failed", server_fd);
         }
 
+        std::cout << std::endl << "----------------------------------------" << std::endl;
         std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
 
         handle_tcp_client(client_sock);
 
         close(client_sock);
     }
-    // pause();
 
     close(server_fd);
     return 0;

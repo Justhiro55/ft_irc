@@ -16,7 +16,7 @@
 // defines
 #define MAX_PENDING 5
 
-void die_with_error(const char* msg);
+void die_with_error(const char* msg, int fd);
 int create_socket();
 void handle_tcp_client(int client_sock);
 
