@@ -19,5 +19,6 @@
 void die_with_error(const char* msg, int fd);
 int create_socket();
 void handle_tcp_client(int client_sock);
+std::string handle_request(int client_sock);
 
 #endif

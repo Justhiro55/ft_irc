@@ -39,9 +39,12 @@ int main(int argc, char** argv)
         }
 
         std::cout << std::endl << "----------------------------------------" << std::endl;
-        std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
+        // std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
+        // handle_tcp_client(client_sock);
+        std::string body = handle_request(client_sock);
 
-        handle_tcp_client(client_sock);
+        std::cout << "Body: " << std::endl;
+        std::cout << body << std::endl;
 
         close(client_sock);
     }

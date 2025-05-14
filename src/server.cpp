@@ -31,6 +31,18 @@ std::string extract_body_from_request(const std::string& request)
     return "";
 }
 
+std::string handle_request(int client_sock)
+{
+    char buffer[1024];
+    ssize_t bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received < 0)
+        die_with_error("recv() failed", client_sock);
+    buffer[bytes_received] = '\0';
+
+    std::string body = extract_body_from_request(buffer);
+    return body;
+}
+
 void handle_tcp_client(int client_sock)
 {
     char buffer[1024];
