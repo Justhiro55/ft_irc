@@ -25,6 +25,16 @@ int create_socket()
     return sock;
 }
 
+std::string get_body(const std::string& request)
+{
+    size_t pos = request.find("\r\n\r\n");
+    if (pos != std::string::npos)
+    {
+        return request.substr(pos + 4);
+    }
+    return "";
+}
+
 void handle_tcp_client(int client_sock)
 {
     char buffer[1024];
@@ -35,7 +45,7 @@ void handle_tcp_client(int client_sock)
         return;
     }
     buffer[bytes_received] = '\0';
-    std::cout << "Received: " << buffer << std::endl;
+    std::cout << "Received: " << get_body(buffer) << std::endl;
 
     const char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
     send(client_sock, response, strlen(response), 0);
