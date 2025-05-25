@@ -1,20 +1,20 @@
 #include "Message.hpp"
+#include "irc.hpp"
 
 
-void parsing(std::string &request) { 
+void dupServer::parsing(std::string &request) { 
 	Message message;
 	std::string command_names [] = {};
-	void (Message::*commands[])(Message) = {}; //commad系の関数　
+	void (*commands[])(Message) = {}; //commad系の関数　
 
 	message = splitMessage(request);
 
 	for (int i = 0; i < 0 ; i++){
 		if (message.command == command_names[i]) {
-			return (message.*commands[i])(message);
+			return (*commands[i])(message);
 		}
 	}
 	//error not found
-	
 }
 
 

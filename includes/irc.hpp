@@ -13,6 +13,15 @@
 # include <netdb.h>
 # include <arpa/inet.h>
 
+#include "Client.hpp"
+#include "Message.hpp"
+#include "vector"
+
+
+class dupServer {
+	void parsing(std::string &request);
+};
+
 
 
 
