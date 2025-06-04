@@ -38,9 +38,7 @@ std::string handle_request(int client_sock)
     if (bytes_received < 0)
         die_with_error("recv() failed", client_sock);
     buffer[bytes_received] = '\0';
-
-    std::string body = extract_body_from_request(buffer);
-    return body;
+    return extract_body_from_request(buffer);
 }
 
 void handle_tcp_client(int client_sock)
