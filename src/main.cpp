@@ -9,6 +9,56 @@ void print_client_info(const std::vector<std::string>& clients) {
     std::cout << "======================\n" << std::endl;
 }
 
+// 1クライアントとの通信を処理する関数
+void handle_single_client(int client_sock, const std::string& client_info) {
+    char buffer[1024];
+    std::string welcome_msg = "ft_irc server ready\r\n";
+
+    if (send(client_sock, welcome_msg.c_str(), welcome_msg.length(), 0) < 0) {
+        std::cerr << "send failed" << std::endl;
+        return;
+    }
+
+    while (true) {
+        ssize_t bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
+
+        if (bytes_received < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                usleep(10000);
+                continue;
+            }
+            std::cerr << "recv error: " << strerror(errno) << std::endl;
+            break;
+        }
+        else if (bytes_received == 0) {
+            std::cout << "client disconnected" << std::endl;
+            break;
+        }
+
+        buffer[bytes_received] = '\0';
+        std::string data(buffer);
+
+        std::cout << "recv: " << data;
+
+        if (data.find("QUIT") != std::string::npos) {
+            std::string quit_msg = "Closing connection\r\n";
+            send(client_sock, quit_msg.c_str(), quit_msg.length(), 0);
+            break;
+        }
+
+        // simple echo for now
+        std::string response = ":" + client_info + " PRIVMSG echo :" + data;
+        if (response.back() != '\n') {
+            response += "\r\n";
+        }
+
+        if (send(client_sock, response.c_str(), response.length(), 0) < 0) {
+            std::cerr << "send failed" << std::endl;
+            break;
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     if (argc != 2)
@@ -65,41 +115,16 @@ int main(int argc, char** argv)
 
         // クライアント情報を記録
         std::ostringstream oss;
-        oss << "IP: " << inet_ntoa(client_addr.sin_addr) << " (socket: " << client_sock << ")";
-        client_history.push_back(oss.str());
+        oss << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port);
+        std::string client_info = oss.str();
+        client_history.push_back(client_info);
 
-        std::cout << "New connection: " << inet_ntoa(client_addr.sin_addr) << std::endl;
+        std::cout << "new connection from " << client_info << std::endl;
 
-        // クライアントからのデータ受信
-        char buffer[1024];
-        ssize_t bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
-
-        if (bytes_received < 0)
-        {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-            {
-                continue;
-            }
-            std::cerr << "recv() failed: " << strerror(errno) << std::endl;
-            close(client_sock);
-            continue;
-        }
-        else if (bytes_received == 0)
-        {
-            std::cout << "Client disconnected: " << inet_ntoa(client_addr.sin_addr) << std::endl;
-            close(client_sock);
-            continue;
-        }
-
-        // データを受信した場合
-        buffer[bytes_received] = '\0';
-        std::string body(buffer);
-        if (!body.empty())
-        {
-            std::cout << "Received: " << body << std::endl;
-        }
+        handle_single_client(client_sock, client_info);
 
         close(client_sock);
+        std::cout << "connection closed" << std::endl;
     }
 
     close(server_fd);
