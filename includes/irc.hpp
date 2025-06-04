@@ -12,6 +12,9 @@
 # include <sys/types.h>
 # include <netdb.h>
 # include <arpa/inet.h>
+#include <fcntl.h>
+#include <vector>
+#include <sstream>
 
 // defines
 #define MAX_PENDING 5
