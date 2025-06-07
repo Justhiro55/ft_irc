@@ -1,54 +1,57 @@
 #include "../includes/irc.hpp"
+#include <signal.h>
 
-int main(int argc, char** argv)
-{
-    if (argc != 2)
+// signal handling
+IRCServer* g_server = NULL;
+
+void signal_handler(int signum) {
+    std::cout << "\nShutting down server (signal: " << signum << ")..." << std::endl;
+    if (g_server) {
+        g_server->stop();
+        delete g_server;
+        g_server = NULL;
+    }
+    exit(0);
+}
+
+int main(int argc, char** argv) {
+    if (argc != 3)
     {
-        std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
         return 1;
     }
 
     int port = std::atoi(argv[1]);
-
-    int server_fd = create_socket();
-
-    // structure: local address
-    sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET; // IPv4, internet address family
-    addr.sin_addr.s_addr = htonl(INADDR_ANY); // wildcard address
-    addr.sin_port = htons(port); // port number
-
-    if (bind(server_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-        die_with_error("bind() failed", server_fd);
-
-    if (listen(server_fd, MAX_PENDING) < 0)
-        die_with_error("listen() failed", server_fd);
-
-    std::cout << "Listening on port " << port << "..." << std::endl;
-
-    for(;;)
-    {
-        sockaddr_in client_addr;
-        socklen_t client_addr_len = sizeof(client_addr);
-        int client_sock = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if (client_sock < 0)
-        {
-            close(client_sock);
-            die_with_error("accept() failed", server_fd);
-        }
-
-        std::cout << std::endl << "----------------------------------------" << std::endl;
-        // std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
-        // handle_tcp_client(client_sock);
-        std::string body = handle_request(client_sock);
-
-        std::cout << "Body: " << std::endl;
-        std::cout << body << std::endl;
-
-        close(client_sock);
+    if (port <= 0 || port > 65535) {
+        std::cerr << "Invalid port number: " << port << std::endl;
+        return 1;
     }
 
-    close(server_fd);
+    std::string password = argv[2];
+    if (password.empty()) {
+        std::cerr << "Password cannot be empty" << std::endl;
+        return 1;
+    }
+
+    signal(SIGINT, signal_handler);   // Ctrl+C
+    signal(SIGTERM, signal_handler);  // Terminate signal
+
+    try {
+        // Create and start IRC server
+        g_server = new IRCServer(port, password);
+        std::cout << "Starting IRC server on port " << port << std::endl;
+        std::cout << "Press Ctrl+C to stop the server" << std::endl;
+
+        g_server->start();
+
+    } catch (const std::exception& e) {
+        std::cerr << "Server error: " << e.what() << std::endl;
+        return 1;
+    }
+
+    if (g_server) {
+        delete g_server;
+    }
+
     return 0;
 }
