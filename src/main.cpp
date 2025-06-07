@@ -15,9 +15,9 @@ void signal_handler(int signum) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 2)
+    if (argc != 3)
     {
-        std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
         return 1;
     }
 
@@ -27,12 +27,18 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    std::string password = argv[2];
+    if (password.empty()) {
+        std::cerr << "Password cannot be empty" << std::endl;
+        return 1;
+    }
+
     signal(SIGINT, signal_handler);   // Ctrl+C
     signal(SIGTERM, signal_handler);  // Terminate signal
 
     try {
         // Create and start IRC server
-        g_server = new IRCServer(port);
+        g_server = new IRCServer(port, password);
         std::cout << "Starting IRC server on port " << port << std::endl;
         std::cout << "Press Ctrl+C to stop the server" << std::endl;
 

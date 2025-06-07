@@ -40,11 +40,12 @@ class IRCServer {
 private:
     int server_fd;
     int port;
+    std::string password;
     std::vector<struct pollfd> poll_fds;
     std::map<int, Client*> clients;
 
 public:
-    IRCServer(int server_port);
+    IRCServer(int server_port, const std::string& server_password);
     ~IRCServer();
 
     void start();
@@ -59,6 +60,7 @@ private:
     void handle_client_data(int client_fd);
     void send_to_client(int client_fd, const std::string& message);
     void die_with_error(const char* msg, int fd);
+    const std::string& get_password() const;
 };
 
 #endif

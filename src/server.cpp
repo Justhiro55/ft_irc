@@ -1,7 +1,8 @@
 #include "../includes/irc.hpp"
 
 // Constructor
-IRCServer::IRCServer(int server_port) : server_fd(-1), port(server_port) {
+IRCServer::IRCServer(int server_port, const std::string& server_password)
+    : server_fd(-1), port(server_port), password(server_password) {
     setup_server();
 }
 
@@ -232,4 +233,8 @@ void IRCServer::send_to_client(int client_fd, const std::string& message) {
             remove_client(client_fd);
         }
     }
+}
+
+const std::string& IRCServer::get_password() const {
+    return password;
 }
