@@ -6,14 +6,24 @@
 #include "ServerData.hpp"
 
 class AbstractCommand {
-	private:
+	protected:
 		Message message;
 		ServerData *serverData;
-		Client	*client;
+		Client	*executer;
 
 	public:
 		AbstractCommand();
 		virtual ~AbstractCommand() = 0;
 		virtual void executeCmd() = 0;
-		
+
+		    const Message& getMessage() const;
+		void setMessage(const Message& message);
+
+		// serverDataのgetterとsetter
+		ServerData* getServerData() const;
+		void setServerData(ServerData* serverData);
+
+		// executerのgetterとsetter
+		Client* getExecuter() const;
+		void setExecuter(Client* executer);
 };

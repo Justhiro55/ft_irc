@@ -11,6 +11,15 @@ ServerData::~ServerData() {
 	clients.clear();
 }
 
+
+void ServerData::setPassword(std::string password) {
+	this->password = password;
+}
+
+bool ServerData::verifyPassword(std::string password) {
+	return this->password == password;
+}
+
 Client* ServerData::getClientByFd(int fd) {
 	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
 		if ((*it)->getClientFd() == fd) {

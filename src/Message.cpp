@@ -1,20 +1,20 @@
 #include "Message.hpp"
 #include "irc.hpp"
 
-
 void dupServer::parsing(std::string &request) { 
 	Message message;
 	std::string command_names [] = {};
 	void (*commands[])(Message) = {}; //commad系の関数　
 
-	message = splitMessage(request);
+	message = tokenizeMessage(request);
 
 	for (int i = 0; i < 0 ; i++){
 		if (message.command == command_names[i]) {
 			return (*commands[i])(message);
 		}
 	}
-	//error not found
+
+	
 }
 
 
@@ -28,7 +28,7 @@ Message& Message::operator=(const Message& obj) {
 	return *this;
 }
 
-Message splitMessage(std::string &request) {
+Message tokenizeMessage(std::string &request) {
 	Message message;
 	std::istringstream ss(request);
 	std::string token;
@@ -51,6 +51,7 @@ Message splitMessage(std::string &request) {
 	//一応一旦分けました、、
 	while (std::getline(ss, token, ' ')) {
 		if (token.empty()) continue;
+
 		message.params.push_back(token);
 	}
 
