@@ -19,6 +19,18 @@
 #include <errno.h>
 #include <map>
 
+#include "Client.hpp"
+#include "Message.hpp"
+#include "vector"
+
+
+class dupServer {
+	void parsing(std::string &request);
+};
+
+
+
+
 // defines
 #define MAX_PENDING 5
 #define BUFFER_SIZE 1024
