@@ -1,4 +1,4 @@
-#include "AbstractCommand.hpp"
+#include "../includes/AbstractCommand.hpp"
 
 AbstractCommand::AbstractCommand() : serverData(NULL), executer(NULL) {}
 
