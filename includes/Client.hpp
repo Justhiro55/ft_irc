@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Message.hpp"
+#include "Channel.hpp"
+
 #include <iostream>
 #include <queue>
 #include <sys/socket.h>
@@ -14,6 +16,9 @@ class Client {
 		std::string host;
 		std::string username;
 		std::string server;
+
+		std::vector<Channel *> join_channels; 
+
 		std::string receiveBuffer;
 		std::queue<Message>		recvQueue;
 		std::queue<std::string> sendQueue;

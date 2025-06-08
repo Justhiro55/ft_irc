@@ -14,11 +14,14 @@ class ServerData {
 		ServerData();
 		~ServerData();
 
-		void setClient(Client *client);
-		void setChannel(Channel *channel);
-		void setPassword(std::string password);
+		void	setClient(Client *client);
+		void	setChannel(Channel *channel);
+		void	setPassword(std::string password);
 
-		bool verifyPassword(std::string password);
-		Client *getClientByFd(int fd);
-		Client *getClientByNickname(std::string &nick);
+		bool	verifyPassword(std::string password);
+
+		Client	*getClientByFd(int fd);
+		Client	*getClientByNickname(std::string &nick);
+
+		Channel	*getChannelByName(std::string &name);
 };

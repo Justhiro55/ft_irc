@@ -4,6 +4,7 @@
 
 #include <string>
 #include <cctype>
+#include <sstream> 
 
 class Nick : public AbstractCommand {
 	public:
@@ -32,5 +33,9 @@ class User : public AbstractCommand {
 };
 
 class Join : public AbstractCommand {
+	public:
+		Join();
+		~Join();
 
+		void executeCmd();
 };
