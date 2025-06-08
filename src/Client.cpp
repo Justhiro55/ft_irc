@@ -1,8 +1,6 @@
-#include "Client.hpp"
+#include "../includes/Client.hpp"
 
-#include "Client.hpp"
-
-Client::Client() : fd(-1), nickname(""), host(""), username(""), server("") {}
+Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), nickname(""), host(""), username(""), server("") {}
 
 Client::~Client() {}
 
@@ -12,6 +10,10 @@ void Client::setClientFd(int fd) {
 
 void Client::setAuth(bool auth) {
 	this->auth = auth;
+}
+
+void Client::setRegister(bool isRegister) {
+	this->isRegister = isRegister;
 }
 
 void Client::setNickname(std::string &nickname) {
@@ -30,12 +32,24 @@ void Client::setServer(std::string &server) {
     this->server = server;
 }
 
+void Client::setIp(const std::string& ip) {
+    this->ip = ip;
+}
+
+void Client::setPort(int port) {
+    this->port = port;
+}
+
 int Client::getClientFd() {
     return this->fd;
 }
 
 bool Client::getAuth() {
+    return this->auth;
+}
 
+bool Client::getRegister() {
+    return this->isRegister;
 }
 
 std::string Client::getNickname() {
@@ -52,6 +66,18 @@ std::string Client::getUsername() {
 
 std::string Client::getServer() {
     return this->server;
+}
+
+const std::string& Client::getIp() const {
+    return this->ip;
+}
+
+int Client::getPort() const {
+    return this->port;
+}
+
+void Client::pushToSendQueue(std::string reply) {
+    this->sendQueue.push(reply);
 }
 
 ssize_t Client::pushToRecvQueue() {

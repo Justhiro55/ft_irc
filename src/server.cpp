@@ -3,12 +3,15 @@
 // Constructor
 IRCServer::IRCServer(int server_port, const std::string& server_password)
     : server_fd(-1), port(server_port), password(server_password) {
+    serverData = new ServerData();
+    serverData->setPassword(server_password);
     setup_server();
 }
 
 // Destructor
 IRCServer::~IRCServer() {
     stop();
+    delete serverData;
 }
 
 void IRCServer::die_with_error(const char* msg, int fd)
@@ -104,7 +107,7 @@ void IRCServer::start() {
 void IRCServer::stop() {
     // Close all client connections
     for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
-        close(it->second->fd);
+        close(it->second->getClientFd());
         delete it->second;
     }
     clients.clear();
@@ -153,8 +156,13 @@ void IRCServer::handle_new_connection() {
 
 void IRCServer::add_client(int client_fd, const std::string& ip, int port) {
     // Create new client
-    Client* new_client = new Client(client_fd, ip, port);
+    Client* new_client = new Client();
+    new_client->setClientFd(client_fd);
+    new_client->setIp(ip);
+    new_client->setPort(port);
+
     clients[client_fd] = new_client;
+    serverData->setClient(new_client);
 
     // Add to poll array
     struct pollfd client_poll_fd;
@@ -212,17 +220,10 @@ void IRCServer::handle_client_data(int client_fd) {
 
     Client* client = it->second;
 
-    client->buffer += data;
+    client->getBuffer() += data;
 
-    std::cout << "Received from " << client->ip << ":" << client->port << ": " << data;
+    std::cout << "Received from " << client->getIp() << ":" << client->getPort() << ": " << data;
 
-    // Echo response
-    std::string response = ":" + client->ip + ":" + std::to_string(client->port) + " PRIVMSG echo :" + data;
-    if (response.back() != '\n') {
-        response += "\r\n";
-    }
-
-    send_to_client(client_fd, response);
 }
 
 void IRCServer::send_to_client(int client_fd, const std::string& message) {
@@ -233,6 +234,18 @@ void IRCServer::send_to_client(int client_fd, const std::string& message) {
             remove_client(client_fd);
         }
     }
+}
+
+Client* IRCServer::getClient(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it != clients.end()) {
+        return it->second;
+    }
+    return NULL;
+}
+
+ServerData* IRCServer::getServerData() {
+    return serverData;
 }
 
 const std::string& IRCServer::get_password() const {

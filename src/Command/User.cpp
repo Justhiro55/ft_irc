@@ -1,5 +1,4 @@
-
-#include "Command.hpp"
+#include "../includes/Command.hpp"
 
 User::User() : AbstractCommand(){}
 

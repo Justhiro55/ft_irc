@@ -1,4 +1,4 @@
-#include "ServerData.hpp"
+#include "../includes/ServerData.hpp"
 
 ServerData::ServerData() {
 	// 必要なら初期化
@@ -16,6 +16,10 @@ ServerData::~ServerData() {
 	clients.clear();
 }
 
+
+void ServerData::setClient(Client *client) {
+	clients.push_back(client);
+}
 
 void ServerData::setPassword(std::string password) {
 	this->password = password;

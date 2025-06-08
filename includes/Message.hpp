@@ -12,6 +12,7 @@ class Message {
 		std::string trailing;
 		std::string error;
 		
+		Message();
    		Message& operator=(const Message& obj);
 };
 
