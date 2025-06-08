@@ -224,6 +224,50 @@ void IRCServer::handle_client_data(int client_fd) {
 
     std::cout << "Received from " << client->getIp() << ":" << client->getPort() << ": " << data;
 
+    // 受信したデータから"\r\n"で終わるメッセージを処理する
+    parse_messages(client_fd);
+}
+
+void IRCServer::parse_messages(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it == clients.end()) {
+        return; // Client not found
+    }
+
+    Client* client = it->second;
+    std::string& buffer = client->getBuffer();
+
+    // Process complete messages in buffer
+    size_t pos = 0;
+    while ((pos = buffer.find("\r\n")) != std::string::npos) {
+        // Extract complete message
+        std::string message = buffer.substr(0, pos);
+
+        // バッファから処理済みメッセージ削除
+        buffer.erase(0, pos + 2);
+
+        // Skip empty messages
+        if (message.empty()) {
+            continue;
+        }
+
+        std::cout << "Complete message from " << client->getIp() << ":" << client->getPort()
+                  << ": '" << message << "'" << std::endl;
+
+        // Parse message and add to client's receive queue
+        Message parsed_message = tokenizeMessage(message);
+        client->pushMessageToRecvQueue(parsed_message);
+
+        std::cout << "Message added to recvQueue - Command: " << parsed_message.command
+                  << ", Params: " << parsed_message.params.size() << std::endl;
+    }
+
+    // Check buffer size to prevent memory issues
+    if (buffer.length() > BUFFER_SIZE * 2) {
+        std::cout << "Buffer overflow protection: clearing buffer for client " << client_fd << std::endl;
+        buffer.clear();
+        send_to_client(client_fd, "ERROR :Message too long\r\n");
+    }
 }
 
 void IRCServer::send_to_client(int client_fd, const std::string& message) {

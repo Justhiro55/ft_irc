@@ -32,6 +32,7 @@ class Client {
 		void setRegister(bool isRegister);
 
 		ssize_t pushToRecvQueue();
+		void pushMessageToRecvQueue(const Message& message);
 		void pushToSendQueue(std::string reply);
 		std::queue<std::string> splitStream(std::string& val, const std::string& delim);
 
