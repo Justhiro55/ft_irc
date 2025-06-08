@@ -11,6 +11,7 @@ class Message {
 		std::string prefix;
 		std::string error;
 		
+		Message();
    		Message& operator=(const Message& obj);
 };
 

@@ -1,5 +1,7 @@
-#include "Message.hpp"
-#include "irc.hpp"
+#include "../includes/Message.hpp"
+#include "../includes/irc.hpp"
+
+Message::Message() : command(""), prefix(""), error("") {}
 
 void dupServer::parsing(std::string &request) { 
 	Message message;
@@ -33,14 +35,14 @@ Message tokenizeMessage(std::string &request) {
 	std::istringstream ss(request);
 	std::string token;
 	int token_count = 0;
-	bool isPrefix = false;
+	// bool isPrefix = false;
 
 	while (std::getline(ss, token, ' ')) {
 		if (token.empty()) continue;
 
 		if (token_count == 0  && token[0] == ':') {
 			message.prefix = token;
-			isPrefix = true;
+			// isPrefix = true;
 			token_count ++;
 			continue ;
 		}

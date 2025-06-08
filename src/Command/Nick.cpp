@@ -1,6 +1,6 @@
-#include "Message.hpp"
-#include "Client.hpp"
-#include "Command.hpp"
+#include "../includes/Message.hpp"
+#include "../includes/Client.hpp"
+#include "../includes/Command.hpp"
 
 Nick::Nick() : AbstractCommand(){}
 
