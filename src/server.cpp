@@ -295,6 +295,9 @@ void IRCServer::parse_messages(int client_fd) {
 
         std::cout << "Message added to recvQueue - Command: " << parsed_message.command
                   << ", Params: " << parsed_message.params.size() << std::endl;
+
+        std::string echo_message = "ECHO :" + message + "\r\n";
+        send_to_client(client_fd, echo_message);
     }
 
     // Check buffer size to prevent memory issues
