@@ -31,6 +31,7 @@ class dupServer {
 // defines
 #define MAX_PENDING 5
 #define BUFFER_SIZE 1024
+#define MESSAGE_MAX_LEN 512
 #define MAX_CLIENTS 128
 
 class AbstractCommand;
@@ -66,6 +67,7 @@ private:
     void handle_client_send(int client_fd);
     void parse_messages(int client_fd);
     void send_to_client(int client_fd, const std::string& message);
+    void send_error_message(int client_fd, const std::string& message);
     void die_with_error(const char* msg, int fd);
 };
 

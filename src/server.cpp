@@ -257,6 +257,15 @@ void IRCServer::parse_messages(int client_fd) {
     // Process complete messages in buffer
     size_t pos = 0;
     while ((pos = buffer.find("\r\n")) != std::string::npos) {
+        size_t message_length = pos;
+        if (message_length > MESSAGE_MAX_LEN) {
+            std::cout << "Message too long (" << message_length
+                      << " bytes) from client " << client_fd << std::endl;
+            send_error_message(client_fd, "ERROR :Message too long\r\n");
+            buffer.erase(0, pos + 2);
+            continue;
+        }
+
         // Extract complete message
         std::string message = buffer.substr(0, pos);
 
@@ -292,7 +301,7 @@ void IRCServer::parse_messages(int client_fd) {
     if (buffer.length() > BUFFER_SIZE * 2) {
         std::cout << "Buffer overflow protection: clearing buffer for client " << client_fd << std::endl;
         buffer.clear();
-        send_to_client(client_fd, "ERROR :Message too long\r\n");
+        send_error_message(client_fd, "ERROR :Message too long\r\n");
     }
 }
 
@@ -356,6 +365,15 @@ void IRCServer::send_to_client(int client_fd, const std::string& message) {
         if (poll_fds[i].fd == client_fd) {
             poll_fds[i].events |= POLLOUT;
             break;
+        }
+    }
+}
+
+void IRCServer::send_error_message(int client_fd, const std::string& message) {
+    ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
+    if (bytes_sent < 0) {
+        if (errno != EAGAIN && errno != EWOULDBLOCK) {
+            perror("send_error_message() failed");
         }
     }
 }
