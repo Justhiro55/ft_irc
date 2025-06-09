@@ -63,6 +63,7 @@ private:
     void remove_client(int client_fd);
     void handle_new_connection();
     void handle_client_data(int client_fd);
+    void handle_client_send(int client_fd);
     void parse_messages(int client_fd);
     void send_to_client(int client_fd, const std::string& message);
     void die_with_error(const char* msg, int fd);
