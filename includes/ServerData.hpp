@@ -17,6 +17,7 @@ class ServerData {
 		void setClient(Client *client);
 		void setChannel(Channel *channel);
 		void setPassword(std::string password);
+		void removeClient(Client *client);
 
 		bool verifyPassword(std::string password);
 		Client *getClientByFd(int fd);

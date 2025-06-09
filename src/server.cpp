@@ -183,11 +183,20 @@ void IRCServer::add_client(int client_fd, const std::string& ip, int port) {
 void IRCServer::remove_client(int client_fd) {
     // Remove from clients map
     std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it != clients.end()) {
-        delete it->second;
-        clients.erase(it);
+    if (it == clients.end()) {
+        return;
     }
 
+    Client* client = it->second;
+
+    // Remove ServerData
+    serverData->removeClient(client);
+
+    // Remove clients map
+    delete client;
+    clients.erase(it);
+
+    // Remove poll_fds
     for (size_t i = 0; i < poll_fds.size(); ++i) {
         if (poll_fds[i].fd == client_fd) {
             poll_fds.erase(poll_fds.begin() + i);
