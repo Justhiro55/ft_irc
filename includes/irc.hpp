@@ -67,7 +67,6 @@ private:
     void handle_client_send(int client_fd);
     void parse_messages(int client_fd);
     void send_to_client(int client_fd, const std::string& message);
-    void send_error_message(int client_fd, const std::string& message);
     void die_with_error(const char* msg, int fd);
 };
 
