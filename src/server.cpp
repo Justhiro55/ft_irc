@@ -103,7 +103,6 @@ void IRCServer::start() {
             // Handle client disconnection or errors
             if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL)) {
                 if (poll_fds[i].fd != server_fd) {
-                    std::cout << "Client disconnected (fd: " << poll_fds[i].fd << ")" << std::endl;
                     remove_client(poll_fds[i].fd);
                     i--; // Adjust index after removal
                 }
@@ -131,6 +130,25 @@ void IRCServer::stop() {
 }
 
 void IRCServer::handle_new_connection() {
+    // Check: max_clients limit
+    if (clients.size() >= MAX_CLIENTS) {
+        sockaddr_in client_addr;
+        socklen_t client_addr_len = sizeof(client_addr);
+        int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
+
+        if (client_fd >= 0) {
+            std::string client_ip = inet_ntoa(client_addr.sin_addr);
+            int client_port = ntohs(client_addr.sin_port);
+
+            std::cout << "Connection limit reached." << std::endl;
+
+            const char* error_msg = "ERROR :Server full\r\n";
+            send(client_fd, error_msg, strlen(error_msg), 0);
+            close(client_fd);
+        }
+        return;
+    }
+
     sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
 
@@ -157,7 +175,8 @@ void IRCServer::handle_new_connection() {
     add_client(client_fd, client_ip, client_port);
 
     std::cout << "New connection from " << client_ip << ":" << client_port
-              << " (fd: " << client_fd << ")" << std::endl;
+              << " (fd: " << client_fd << ") - Total: "
+              << clients.size() << "/" << MAX_CLIENTS << std::endl;
 
     send_to_client(client_fd, "ft_irc server ready\r\n");
 }
