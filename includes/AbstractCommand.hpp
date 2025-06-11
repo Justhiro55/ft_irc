@@ -4,6 +4,7 @@
 #include "Message.hpp"
 #include "Client.hpp"
 #include "ServerData.hpp"
+#include "Reply.hpp"
 
 class AbstractCommand {
 	protected:
@@ -25,7 +26,7 @@ class AbstractCommand {
 		Client* getExecuter() const;
 		void setExecuter(Client* executer);
 
-		void sendToExecuter(std::string &reply);
+		void sendToExecuter(const std::string &reply);
 		void sendToClient(Client *client, std::string &reply);
 		void sentToClients(std::vector<Client *> clients, std::string &reply);
 };

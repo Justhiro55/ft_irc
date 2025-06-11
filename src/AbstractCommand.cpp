@@ -26,7 +26,7 @@ void AbstractCommand::setExecuter(Client* executer) {
     this->executer = executer;
 }
 
-void AbstractCommand::sendToExecuter(std::string &reply) {
+void AbstractCommand::sendToExecuter(const std::string &reply) {
 	if (reply.empty())
 		return ;
 	executer->pushToSendQueue(reply);

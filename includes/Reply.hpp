@@ -1,7 +1,3 @@
 #pragma once
-
-
-#define ERR_NOTREGISTERED(source) "451 " + source + " :You have not registered"
- 
  	
-#define ERR_RESTRICTED()
+#define ERR_RESTRICTED(executer) "484 " + executer + " :Your connection is restricted!"

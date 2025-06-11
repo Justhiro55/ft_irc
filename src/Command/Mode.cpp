@@ -20,15 +20,7 @@ void Mode::executeCmd() {
         Channel* chan;
         chan = serverData->getChannelByName( params.front() );
 		if (chan == NULL)
-			return ; //error
-        // if ( params.size() == 1 )
-        //     return sendReply( RPL_CHANNELMODEIS, "", executer->getNickname(),  chan->getName() + " " +getMode( chan ) );
-
-        // if ( params.size() >= 2 )
-        //     setChanMode( params, client, chan );
-        // else
-        //     sendReply( ERR_UMODEUNKNOWNFLAG );
-        // return ;
+			return ; //eっろr
     }
 }
 
