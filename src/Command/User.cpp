@@ -7,7 +7,7 @@ User::~User() {}
 void User::executeCmd() {
 
 	if (this->executer->getAuth())
-		return ; // 484  ERR_RESTRICTED ":Your connection is restricted!"
+		return sendToExecuter(ERR_RESTRICTED(this->executer->getNickname())); ; // こんな感じでReply.hppにdefineして使う方でも、、いいすか？
 
 	if (!this->executer->getRegister())
 		return ; // 462  ERR_ALREADYREGISTRED ":Unauthorized command (already registered)"

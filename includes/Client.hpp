@@ -51,7 +51,7 @@ class Client {
 		int getClientFd();
 		bool getAuth();
 		bool getRegister();
-		std::string getNickname();
+		std::string getNickname() const;
 		std::string getHost();
 		std::string getUsername();
 		std::string getServer();
