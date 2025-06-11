@@ -26,3 +26,23 @@ void AbstractCommand::setExecuter(Client* executer) {
     this->executer = executer;
 }
 
+void AbstractCommand::sendToExecuter(std::string &reply) {
+	if (reply.empty())
+		return ;
+	executer->pushToSendQueue(reply);
+}
+
+void AbstractCommand::sendToClient(Client *client, std::string &reply) {
+	if (reply.empty())
+		return ;
+	client->pushToSendQueue(reply);
+}
+
+void AbstractCommand::sentToClients(std::vector<Client *> clients, std::string &reply) {
+	if (clients.size() <= 0 || reply.empty())
+		return;
+	
+	for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+		this->sendToClient(*it, reply);
+	}
+}

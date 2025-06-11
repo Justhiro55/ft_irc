@@ -1,9 +1,13 @@
 #pragma once
 
 #include "Message.hpp"
+#include "Channel.hpp"
+
 #include <iostream>
 #include <queue>
 #include <sys/socket.h>
+
+#define USER_MODE_OPERATOR	(1 << 0)   // 0001   +o (オペレーター権限付与)
 
 class Client {
 	private:
@@ -16,6 +20,12 @@ class Client {
 		std::string host;
 		std::string username;
 		std::string server;
+		std::string realname;
+
+		unsigned short modes;
+
+		std::vector<Channel *> join_channels; 
+
 		std::string receiveBuffer;
 		std::queue<Message>		recvQueue;
 		std::queue<std::string> sendQueue;
@@ -28,9 +38,12 @@ class Client {
 		void setHost(std::string &host);
 		void setUsername(std::string &username);
 		void setServer(std::string &server);
+		void setRealname(std::string &realname);
 		void setAuth(bool auth);
 		void setRegister(bool isRegister);
-
+		void setMode(unsigned short mode);
+		void unsetMode(unsigned short mode);
+		bool hasMode(unsigned short mode);
 		ssize_t pushToRecvQueue();
 		void pushToSendQueue(std::string reply);
 		std::queue<std::string> splitStream(std::string& val, const std::string& delim);
@@ -42,6 +55,7 @@ class Client {
 		std::string getHost();
 		std::string getUsername();
 		std::string getServer();
+		std::string& getRealname() const;
 
 		void setIp(const std::string& ip);
 		void setPort(int port);

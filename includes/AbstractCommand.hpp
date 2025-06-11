@@ -16,14 +16,16 @@ class AbstractCommand {
 		virtual ~AbstractCommand() = 0;
 		virtual void executeCmd() = 0;
 
-		    const Message& getMessage() const;
+		const Message& getMessage() const;
 		void setMessage(const Message& message);
 
-		// serverDataのgetterとsetter
 		ServerData* getServerData() const;
 		void setServerData(ServerData* serverData);
 
-		// executerのgetterとsetter
 		Client* getExecuter() const;
 		void setExecuter(Client* executer);
+
+		void sendToExecuter(std::string &reply);
+		void sendToClient(Client *client, std::string &reply);
+		void sentToClients(std::vector<Client *> clients, std::string &reply);
 };
