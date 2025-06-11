@@ -32,12 +32,36 @@ void Client::setServer(std::string &server) {
     this->server = server;
 }
 
+void Client::setRealname(std::string &realname) {
+	this->realname = realname;
+}
+
 void Client::setIp(const std::string& ip) {
     this->ip = ip;
 }
 
 void Client::setPort(int port) {
     this->port = port;
+}
+
+void Client::setMode(unsigned short mode) {
+	if (mode == USER_MODE_OPERATOR)
+		this->modes |= USER_MODE_OPERATOR;
+	
+	return;
+}
+
+void Client::unsetMode(unsigned short mode) {
+	if (mode == USER_MODE_OPERATOR)
+		this->modes &= ~USER_MODE_OPERATOR;
+
+	return ;
+}
+
+bool Client::hasMode(unsigned short mode) {
+	if (mode == USER_MODE_OPERATOR)
+		return true;
+	return false;
 }
 
 int Client::getClientFd() {
@@ -76,6 +100,10 @@ int Client::getPort() const {
     return this->port;
 }
 
+std::string& Client::getRealname() const {
+
+}
+
 void Client::pushToSendQueue(std::string reply) {
     this->sendQueue.push(reply);
 }
@@ -110,4 +138,3 @@ std::queue<std::string> Client::splitStream(std::string& val, const std::string&
     }
     return ret;
 }
-

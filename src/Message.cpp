@@ -51,11 +51,31 @@ Message tokenizeMessage(std::string &request) {
 		break;
 	}
 	//一応一旦分けました、、
-	while (std::getline(ss, token, ' ')) {
-		if (token.empty()) continue;
+while (std::getline(ss, token, ' ')) {
+    if (token.empty()) continue;
 
-		message.params.push_back(token);
-	}
+    if (token[0] == ':') {
+        std::string trailing = token.substr(1);
+
+        std::string rest;
+        while (std::getline(ss, token, ' ')) {
+            trailing += " " + token;
+        }
+
+        if (!trailing.empty()) {
+            if (trailing.size() >= 2 && trailing[trailing.size() - 2] == '\r' && trailing[trailing.size() - 1] == '\n') {
+                trailing.erase(trailing.size() - 2);
+            } else if (trailing[trailing.size() - 1] == '\n') {
+                trailing.erase(trailing.size() - 1);
+            }
+        }
+
+        message.params.push_back(trailing);
+        break;
+    } else {
+        message.params.push_back(token);
+    }
+}
 
 	if (message.params.size() > 15)
 		message.error = "number of param should be lower than 15";

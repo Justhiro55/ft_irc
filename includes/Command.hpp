@@ -5,6 +5,7 @@
 #include <string>
 #include <cctype>
 #include <sstream> 
+#include <utility>
 
 class Nick : public AbstractCommand {
 	public:
@@ -38,4 +39,14 @@ class Join : public AbstractCommand {
 		~Join();
 
 		void executeCmd();
+};
+
+class Mode : public AbstractCommand {
+	public:
+		Mode();
+		~Mode();
+
+		void executeCmd();
+		std::string getMode(Client* client);
+		std::string Mode::getMode(Channel* channel);
 };

@@ -1,35 +1,50 @@
 #include "../includes/Command.hpp"
+#include "map"
 
-Join::Join() {}
+Join::Join() :AbstractCommand() {}
 
 Join::~Join() {}
 
 void Join::executeCmd() {
-	std::string channel_name;
-	std::string key;
-	if (this->executer->getAuth())
+	size_t params_size = message.params.size();
+	std::vector<std::pair<std::string, std::string>> param_channels;
+	if (!this->executer->getAuth() || !this->executer->getRegister())
 		return ; // 484  ERR_RESTRICTED ":Your connection is restricted!"
 	
-	if (message.params.size() <= 0)
+	if (params_size < 1 || params_size > 2)
 		return ; // 461 ERR_NEEDMOREPARAMS  <command> :Not enough parameters
 
-	for (std::vector<std::string>::iterator it = message.params.begin(); it != message.params.end(); ++it) {
-		std::stringstream ss(*it);
-		std::string channel_name;
-		std::string key;
-		
-		std::getline(ss, channel_name, ',');
-		std::getline(ss, key);
+	std::stringstream ss(message.params[0]);
+	std::string channel_name;
 
-		if (!isValidChannelName(channel_name))
-			continue;
-			
-		Channel * channel = serverData->getChannelByName(channel_name);
+	while (std::getline(ss, channel_name, ',')) {
+		param_channels.push_back(std::make_pair(channel_name, ""));
+	}
+
+	if (params_size == 2) {
+		std::stringstream ss(message.params[1]);
+		std::string key;
+		std::vector<std::pair<std::string, std::string>>::iterator it = param_channels.begin();
+
+		while (std::getline(ss, key, ',')) {
+			if (it == param_channels.end())
+				break;
+			it->second = key;
+			++it;
+		}
+	}
+
+	for(std::vector<std::pair<std::string, std::string>>::iterator it = param_channels.begin(); it != param_channels.end(); ++it) {
+		if (!isValidChannelName(it->first))
+			continue ; // error
+		Channel * channel = serverData->getChannelByName(it->first);
 		if (channel == NULL) {
 			try {
 				Channel* new_channel = new Channel(channel_name);
-				// if (!key.empty())
-				// 	channle->modeChange
+				if (!it->second.empty()) {
+					new_channel->setMode(MODE_KEY);
+					new_channel->setPassword(it->second);
+				}
 				new_channel->setOperator(executer);
 				serverData->setChannel(new_channel);
 			} catch (std::bad_alloc& e) {
@@ -37,6 +52,14 @@ void Join::executeCmd() {
 			}
 		}
 		else {
+			if (channel->hasMode(MODE_INVITE)) {
+				if (!channel->isInvited(executer->getNickname()))
+					continue; //err code
+			}
+			if (channel->hasMode(MODE_KEY)) {
+				if (!channel->verifyPassword(it->second))
+					continue; // err code
+			}
 			channel->setVoice(executer);
 		}
 	}
