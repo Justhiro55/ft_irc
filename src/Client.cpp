@@ -108,6 +108,10 @@ void Client::pushToSendQueue(std::string reply) {
     this->sendQueue.push(reply);
 }
 
+void Client::pushMessageToRecvQueue(const Message& message) {
+    this->recvQueue.push(message);
+}
+
 ssize_t Client::pushToRecvQueue() {
 	char buffer[1024];
 	ssize_t bytes_received = recv(this->fd, buffer, sizeof(buffer) - 1, 0);

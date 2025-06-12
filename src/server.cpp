@@ -82,6 +82,7 @@ void IRCServer::start() {
 
         // Check each file descriptor
         for (size_t i = 0; i < poll_fds.size(); ++i) {
+            // 受信データの処理
             if (poll_fds[i].revents & POLLIN) {
                 if (poll_fds[i].fd == server_fd) {
                     // New connection
@@ -92,10 +93,16 @@ void IRCServer::start() {
                 }
             }
 
+            // 送信データの処理
+            if (poll_fds[i].revents & POLLOUT) {
+                if (poll_fds[i].fd != server_fd) {
+                    handle_client_send(poll_fds[i].fd);
+                }
+            }
+
             // Handle client disconnection or errors
             if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL)) {
                 if (poll_fds[i].fd != server_fd) {
-                    std::cout << "Client disconnected (fd: " << poll_fds[i].fd << ")" << std::endl;
                     remove_client(poll_fds[i].fd);
                     i--; // Adjust index after removal
                 }
@@ -123,6 +130,25 @@ void IRCServer::stop() {
 }
 
 void IRCServer::handle_new_connection() {
+    // Check: max_clients limit
+    if (clients.size() >= MAX_CLIENTS) {
+        sockaddr_in client_addr;
+        socklen_t client_addr_len = sizeof(client_addr);
+        int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
+
+        if (client_fd >= 0) {
+            std::string client_ip = inet_ntoa(client_addr.sin_addr);
+            int client_port = ntohs(client_addr.sin_port);
+
+            std::cout << "Connection limit reached." << std::endl;
+
+            const char* error_msg = "ERROR :Server full\r\n";
+            send(client_fd, error_msg, strlen(error_msg), 0);
+            close(client_fd);
+        }
+        return;
+    }
+
     sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
 
@@ -149,7 +175,8 @@ void IRCServer::handle_new_connection() {
     add_client(client_fd, client_ip, client_port);
 
     std::cout << "New connection from " << client_ip << ":" << client_port
-              << " (fd: " << client_fd << ")" << std::endl;
+              << " (fd: " << client_fd << ") - Total: "
+              << clients.size() << "/" << MAX_CLIENTS << std::endl;
 
     send_to_client(client_fd, "ft_irc server ready\r\n");
 }
@@ -175,11 +202,20 @@ void IRCServer::add_client(int client_fd, const std::string& ip, int port) {
 void IRCServer::remove_client(int client_fd) {
     // Remove from clients map
     std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it != clients.end()) {
-        delete it->second;
-        clients.erase(it);
+    if (it == clients.end()) {
+        return;
     }
 
+    Client* client = it->second;
+
+    // Remove ServerData
+    serverData->removeClient(client);
+
+    // Remove clients map
+    delete client;
+    clients.erase(it);
+
+    // Remove poll_fds
     for (size_t i = 0; i < poll_fds.size(); ++i) {
         if (poll_fds[i].fd == client_fd) {
             poll_fds.erase(poll_fds.begin() + i);
@@ -224,14 +260,133 @@ void IRCServer::handle_client_data(int client_fd) {
 
     std::cout << "Received from " << client->getIp() << ":" << client->getPort() << ": " << data;
 
+    // 受信したデータから"\r\n"で終わるメッセージを処理する
+    parse_messages(client_fd);
+}
+
+void IRCServer::parse_messages(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it == clients.end()) {
+        return; // Client not found
+    }
+
+    Client* client = it->second;
+    std::string& buffer = client->getBuffer();
+
+    // Process complete messages in buffer
+    size_t pos = 0;
+    while ((pos = buffer.find("\r\n")) != std::string::npos) {
+        size_t message_length = pos;
+        if (message_length > MESSAGE_MAX_LEN) {
+            std::cout << "Message too long (" << message_length
+                      << " bytes) from client " << client_fd << std::endl;
+            send_to_client(client_fd, "ERROR :Message too long\r\n");
+            buffer.erase(0, pos + 2);
+            continue;
+        }
+
+        // Extract complete message
+        std::string message = buffer.substr(0, pos);
+
+        // バッファから処理済みメッセージ削除
+        buffer.erase(0, pos + 2);
+
+        // Skip empty messages
+        if (message.empty()) {
+            continue;
+        }
+
+        std::cout << "Complete message from " << client->getIp() << ":" << client->getPort()
+                  << ": '" << message << "'" << std::endl;
+
+        // メッセージのparseと受信キューへの追加
+        Message parsed_message = tokenizeMessage(message);
+        std::cout << "Parsed Message:" << std::endl;
+        std::cout << "  Prefix: " << parsed_message.prefix << std::endl;
+        std::cout << "  Command: " << parsed_message.command << std::endl;
+        std::cout << "  Params:";
+        for (size_t i = 0; i < parsed_message.params.size(); ++i) {
+            std::cout << " [" << parsed_message.params[i] << "]";
+        }
+        std::cout << std::endl;
+
+        client->pushMessageToRecvQueue(parsed_message);
+
+        std::cout << "Message added to recvQueue - Command: " << parsed_message.command
+                  << ", Params: " << parsed_message.params.size() << std::endl;
+
+        std::string echo_message = "ECHO :" + message + "\r\n";
+        send_to_client(client_fd, echo_message);
+    }
+
+    // Check buffer size to prevent memory issues
+    if (buffer.length() > BUFFER_SIZE * 2) {
+        std::cout << "Buffer overflow protection: clearing buffer for client " << client_fd << std::endl;
+        buffer.clear();
+        send_to_client(client_fd, "ERROR :Message too long\r\n");
+    }
+}
+
+void IRCServer::handle_client_send(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it == clients.end()) {
+        return; // Client not found
+    }
+
+    Client* client = it->second;
+    std::queue<std::string>& sendQueue = client->getSendQueue();
+
+    // 送信キューにあるメッセージを処理
+    while (!sendQueue.empty()) {
+        const std::string& message = sendQueue.front();
+
+        ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
+
+        if (bytes_sent < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                break;
+            } else {
+                perror("send() failed");
+                remove_client(client_fd);
+                return;
+            }
+        } else if (bytes_sent < (ssize_t)message.length()) {
+            // 一部送信 - 残りのデータを更新
+            std::string remaining = message.substr(bytes_sent);
+            sendQueue.pop();
+            sendQueue.push(remaining);
+            break;
+        } else {
+            // 送信完了 - メッセージをキューから削除
+            sendQueue.pop();
+        }
+    }
+
+    // send queueが空になったら，POLLOUTを外す
+    if (sendQueue.empty()) {
+        for (size_t i = 0; i < poll_fds.size(); ++i) {
+            if (poll_fds[i].fd == client_fd) {
+                poll_fds[i].events &= ~POLLOUT;
+                break;
+            }
+        }
+    }
 }
 
 void IRCServer::send_to_client(int client_fd, const std::string& message) {
-    ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
-    if (bytes_sent < 0) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("send() failed");
-            remove_client(client_fd);
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it == clients.end()) {
+        return; // Client not found
+    }
+
+    Client* client = it->second;
+    client->pushToSendQueue(message);
+
+    // 送信可能になったらpoll()で監視できるようにPOLLOUTを設定
+    for (size_t i = 0; i < poll_fds.size(); ++i) {
+        if (poll_fds[i].fd == client_fd) {
+            poll_fds[i].events |= POLLOUT;
+            break;
         }
     }
 }

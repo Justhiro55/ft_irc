@@ -21,6 +21,15 @@ void ServerData::setClient(Client *client) {
 	clients.push_back(client);
 }
 
+void ServerData::removeClient(Client *client) {
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+		if (*it == client) {
+			clients.erase(it);
+			break;
+		}
+	}
+}
+
 void ServerData::setPassword(std::string password) {
 	this->password = password;
 }

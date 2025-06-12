@@ -45,6 +45,7 @@ class Client {
 		void unsetMode(unsigned short mode);
 		bool hasMode(unsigned short mode);
 		ssize_t pushToRecvQueue();
+		void pushMessageToRecvQueue(const Message& message);
 		void pushToSendQueue(std::string reply);
 		std::queue<std::string> splitStream(std::string& val, const std::string& delim);
 
