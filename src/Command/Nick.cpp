@@ -36,7 +36,7 @@ void Nick::executeCmd() {
 	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
 	if (!this->executer->getAuth()) {
-		this->sendToExecuter(ERR_RESTRICTED(nick) + "\r\n");
+		this->sendToExecuter(ERR_NOTREGISTERED(nick) + "\r\n");
 		return ;
 	}
 
@@ -60,7 +60,7 @@ void Nick::executeCmd() {
 
 	this->executer->setNickname(param);
 	
-	if (this->executer->isFullyRegistered()) {
+	if (this->executer->checkAndCompleteRegistration()) {
 		this->sendWelcomeMessages();
 	}
 }

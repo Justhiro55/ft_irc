@@ -9,7 +9,7 @@ void User::executeCmd() {
 	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
 	if (!this->executer->getAuth()) {
-		this->sendToExecuter(ERR_RESTRICTED(nick) + "\r\n");
+		this->sendToExecuter(ERR_NOTREGISTERED(nick) + "\r\n");
 		return ;
 	}
 
@@ -23,14 +23,19 @@ void User::executeCmd() {
 		return ;
 	}
 
+	// Validate parameters are not empty
+	if (message.params[0].empty() || message.params[1].empty() || 
+		message.params[2].empty() || message.params[3].empty()) {
+		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "USER") + "\r\n");
+		return ;
+	}
+
 	this->executer->setUsername(message.params[0]);
 	this->executer->setHost(message.params[1]);
 	this->executer->setServer(message.params[2]);
 	this->executer->setRealname(message.params[3]);
 
-	this->executer->setRegister(true);
-	
-	if (this->executer->isFullyRegistered()) {
+	if (this->executer->checkAndCompleteRegistration()) {
 		this->sendWelcomeMessages();
 	}
 }

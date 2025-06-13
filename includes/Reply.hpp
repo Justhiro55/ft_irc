@@ -20,3 +20,4 @@
 // Common errors
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"
+#define ERR_NOTREGISTERED(nick) "451 " + nick + " :You have not registered"
