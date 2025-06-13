@@ -7,16 +7,23 @@ Pass::~Pass() {}
 void Pass::executeCmd() {
 
 	std::string param;
+	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
-	if (this->executer->getAuth())
-		return ; //  ERR_ALREADYREGISTRED 462 ":Unauthorized command (already registered)"
+	if (this->executer->getAuth()) {
+		this->sendToExecuter(ERR_ALREADYREGISTRED(nick) + "\r\n");
+		return ;
+	}
 
-	if (message.params.size() < 1)
-		return ; // 461 ERR_NEEDMOREPARAMS "Pass :Not enough parameters"
+	if (message.params.size() < 1) {
+		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "PASS") + "\r\n");
+		return ;
+	}
 	
 	param = *(message.params.begin());
-	if (serverData->verifyPassword(param))
+	if (serverData->verifyPassword(param)) {
 		executer->setAuth(true);
-	else
-		return ; //464 ERR_PASSWDMISMATCH
+	} else {
+		this->sendToExecuter(ERR_PASSWDMISMATCH(nick) + "\r\n");
+		return ;
+	}
 }

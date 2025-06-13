@@ -33,21 +33,34 @@ void Nick::executeCmd() {
 
 	Client *target;
 	std::string param;
+	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
-	if (this->executer->getAuth())
-		return ; // 484  ERR_RESTRICTED ":Your connection is restricted!"
+	if (!this->executer->getAuth()) {
+		this->sendToExecuter(ERR_RESTRICTED(nick) + "\r\n");
+		return ;
+	}
 
-	if (message.params.size() < 1)
-		return ; // 431 ERR_NONICKNAMEGIVEN ":No nickname given"
+	if (message.params.size() < 1) {
+		this->sendToExecuter(ERR_NONICKNAMEGIVEN(nick) + "\r\n");
+		return ;
+	}
 
 	param = *(message.params.begin());
 
-	if (!is_valid_nickname(param))
-		return ; // "432 ERR_ERRONEUSNICKNAME <nick> :Erroneous nickname"
+	if (!is_valid_nickname(param)) {
+		this->sendToExecuter(ERR_ERRONEUSNICKNAME(nick, param) + "\r\n");
+		return ;
+	}
 	
 	target = this->serverData->getClientByNickname(param);
-	if (target != NULL)
-	 	return ; //  433 ERR_NICKNAMEINUSE "<nick> :Nickname is already in use"
+	if (target != NULL) {
+		this->sendToExecuter(ERR_NICKNAMEINUSE(nick, param) + "\r\n");
+		return ;
+	}
 
 	this->executer->setNickname(param);
+	
+	if (this->executer->isFullyRegistered()) {
+		this->sendWelcomeMessages();
+	}
 }
