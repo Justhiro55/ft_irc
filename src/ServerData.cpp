@@ -5,10 +5,6 @@ ServerData::ServerData() {
 }
 
 ServerData::~ServerData() {
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
-		delete *it;
-	}
-
 	for (std::vector<Channel*>::iterator it =  channels.begin(); it != channels.end(); ++it) {
 		delete *it;
 	}
