@@ -2,6 +2,8 @@
 
 AbstractCommand::AbstractCommand() : serverData(NULL), executer(NULL) {}
 
+AbstractCommand::~AbstractCommand() {}
+
 const Message& AbstractCommand::getMessage() const {
     return this->message;
 }
@@ -45,4 +47,20 @@ void AbstractCommand::sentToClients(std::vector<Client *> clients, std::string &
 	for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); ++it) {
 		this->sendToClient(*it, reply);
 	}
+}
+
+void AbstractCommand::sendWelcomeMessages() {
+	std::string nick = this->executer->getNickname();
+	std::string user = this->executer->getUsername();
+	std::string host = this->executer->getIp();
+
+	std::string welcome = RPL_WELCOME(nick, user, host) + "\r\n";
+	std::string yourhost = RPL_YOURHOST(nick, "ft_irc", "1.0") + "\r\n";
+	std::string created = RPL_CREATED(nick, "Today") + "\r\n";
+	std::string myinfo = RPL_MYINFO(nick, "ft_irc", "1.0", "o", "itkol") + "\r\n"; // Todo: usermode, channnel mode 仮置き
+
+	this->sendToExecuter(welcome);
+	this->sendToExecuter(yourhost);
+	this->sendToExecuter(created);
+	this->sendToExecuter(myinfo);
 }
