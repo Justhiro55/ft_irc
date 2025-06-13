@@ -14,7 +14,7 @@ void Pass::executeCmd() {
 		return ;
 	}
 
-	if (message.params.size() < 1) {
+	if (message.params.size() < 1 || message.params[0].empty()) {
 		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "PASS") + "\r\n");
 		return ;
 	}
