@@ -48,6 +48,7 @@ class Client {
 		void pushMessageToRecvQueue(const Message& message);
 		void pushToSendQueue(std::string reply);
 		std::queue<std::string> splitStream(std::string& val, const std::string& delim);
+		bool isFullyRegistered();
 
 		int getClientFd();
 		bool getAuth();
@@ -67,4 +68,5 @@ class Client {
 		const std::string& getBuffer() const { return receiveBuffer; }
 
 		std::queue<std::string>& getSendQueue() { return sendQueue; }
+		std::queue<Message>& getRecvQueue() { return recvQueue; }
 };

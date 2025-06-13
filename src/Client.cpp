@@ -76,7 +76,7 @@ bool Client::getRegister() {
     return this->isRegister;
 }
 
-std::string Client::getNickname() {
+std::string Client::getNickname() const {
     return this->nickname;
 }
 
@@ -101,7 +101,11 @@ int Client::getPort() const {
 }
 
 std::string& Client::getRealname() const {
+    return const_cast<std::string&>(this->realname);
+}
 
+bool Client::isFullyRegistered() {
+    return this->auth && !this->nickname.empty() && !this->username.empty() && this->isRegister;
 }
 
 void Client::pushToSendQueue(std::string reply) {
