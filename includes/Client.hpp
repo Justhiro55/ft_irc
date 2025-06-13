@@ -16,6 +16,7 @@ class Client {
 		int port;
 		bool	auth;
 		bool	isRegister;
+		bool	welcomeSent;
 		std::string nickname;
 		std::string host;
 		std::string username;
@@ -41,6 +42,7 @@ class Client {
 		void setRealname(std::string &realname);
 		void setAuth(bool auth);
 		void setRegister(bool isRegister);
+		void setWelcomeSent(bool sent);
 		void setMode(unsigned short mode);
 		void unsetMode(unsigned short mode);
 		bool hasMode(unsigned short mode);
@@ -49,10 +51,12 @@ class Client {
 		void pushToSendQueue(std::string reply);
 		std::queue<std::string> splitStream(std::string& val, const std::string& delim);
 		bool isFullyRegistered();
+		bool checkAndCompleteRegistration();
 
 		int getClientFd();
 		bool getAuth();
 		bool getRegister();
+		bool getWelcomeSent();
 		std::string getNickname() const;
 		std::string getHost();
 		std::string getUsername();

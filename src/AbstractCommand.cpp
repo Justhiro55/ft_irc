@@ -50,6 +50,10 @@ void AbstractCommand::sentToClients(std::vector<Client *> clients, std::string &
 }
 
 void AbstractCommand::sendWelcomeMessages() {
+	if (this->executer->getWelcomeSent()) {
+		return; // Already sent welcome messages
+	}
+
 	std::string nick = this->executer->getNickname();
 	std::string user = this->executer->getUsername();
 	std::string host = this->executer->getIp();
@@ -63,4 +67,6 @@ void AbstractCommand::sendWelcomeMessages() {
 	this->sendToExecuter(yourhost);
 	this->sendToExecuter(created);
 	this->sendToExecuter(myinfo);
+
+	this->executer->setWelcomeSent(true);
 }
