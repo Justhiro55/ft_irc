@@ -38,12 +38,6 @@ bool ServerData::verifyPassword(std::string password) {
 	return this->password == password;
 }
 
-void ServerData::setClient(Client *client) {
-	if (client == NULL)
-		return;
-	this->clients.push_back(client);
-}
-
 Client* ServerData::getClientByFd(int fd) {
 	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
 		if ((*it)->getClientFd() == fd) {
