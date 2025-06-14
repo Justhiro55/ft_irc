@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), nickname(""), host(""), username(""), server("") {}
+Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), nickname(""), host(""), username(""), server("") {}
 
 Client::~Client() {}
 
@@ -14,6 +14,10 @@ void Client::setAuth(bool auth) {
 
 void Client::setRegister(bool isRegister) {
 	this->isRegister = isRegister;
+}
+
+void Client::setWelcomeSent(bool sent) {
+	this->welcomeSent = sent;
 }
 
 void Client::setNickname(std::string &nickname) {
@@ -76,6 +80,10 @@ bool Client::getRegister() {
     return this->isRegister;
 }
 
+bool Client::getWelcomeSent() {
+    return this->welcomeSent;
+}
+
 std::string Client::getNickname() const {
     return this->nickname;
 }
@@ -101,7 +109,24 @@ int Client::getPort() const {
 }
 
 std::string& Client::getRealname() const {
+    return const_cast<std::string&>(this->realname);
+}
 
+bool Client::isFullyRegistered() {
+    return this->auth && !this->nickname.empty() && !this->username.empty() && this->isRegister;
+}
+
+bool Client::checkAndCompleteRegistration() {
+    // Check if all registration requirements are met
+    bool wasRegistered = this->isRegister;
+    bool isNowFullyRegistered = this->auth && !this->nickname.empty() && !this->username.empty();
+    
+    if (isNowFullyRegistered && !wasRegistered) {
+        this->isRegister = true;
+        return true; // Registration just completed
+    }
+    
+    return false; // Registration was already complete or not yet complete
 }
 
 void Client::pushToSendQueue(std::string reply) {
@@ -119,7 +144,7 @@ ssize_t Client::pushToRecvQueue() {
 		return bytes_received;
 	
 	this->receiveBuffer.append(buffer);
-	std::queue<std::string> messages = splitStream(receiveBuffer, "/r/n");
+	std::queue<std::string> messages = splitStream(receiveBuffer, "\r\n");
 	while (messages.size()) {
 		this->recvQueue.push(tokenizeMessage(messages.front()));
 		messages.pop();
