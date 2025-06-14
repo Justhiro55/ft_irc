@@ -29,21 +29,30 @@ void Nick::executeCmd() {
 
 	Client *target;
 	std::string param;
+	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
-	if (this->executer->getAuth())
-		return ; // 484  ERR_RESTRICTED ":Your connection is restricted!"
+	if (!this->executer->getAuth()) {
+		this->sendToExecuter(ERR_NOTREGISTERED(nick) + "\r\n");
+		return ;
+	}
 
-	if (message.params.size() < 1)
-		return ; // 431 ERR_NONICKNAMEGIVEN ":No nickname given"
+	if (message.params.size() < 1) {
+		this->sendToExecuter(ERR_NONICKNAMEGIVEN(nick) + "\r\n");
+		return ;
+	}
 
 	param = *(message.params.begin());
 
-	if (!is_valid_nickname(param))
-		return ; // "432 ERR_ERRONEUSNICKNAME <nick> :Erroneous nickname"
+	if (!is_valid_nickname(param)) {
+		this->sendToExecuter(ERR_ERRONEUSNICKNAME(nick, param) + "\r\n");
+		return ;
+	}
 	
 	target = this->serverData->getClientByNickname(param);
-	if (target != NULL)
-	 	return ; //  433 ERR_NICKNAMEINUSE "<nick> :Nickname is already in use"
+	if (target != NULL) {
+		this->sendToExecuter(ERR_NICKNAMEINUSE(nick, param) + "\r\n");
+		return ;
+	}
 
 	this->executer->setNickname(param);
 }
@@ -52,17 +61,24 @@ void Nick::executeCmd() {
 void Pass::executeCmd() {
 
 	std::string param;
+	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
-	if (this->executer->getAuth())
-		return ; // 462  ERR_ALREADYREGISTRED ":Unauthorized command (already registered)"
+	if (this->executer->getAuth()) {
+		this->sendToExecuter(ERR_ALREADYREGISTRED(nick) + "\r\n");
+		return ;
+	}
 
-	if (message.params.size() < 1)
-		return ; // 461 ERR_NEEDMOREPARAMS "Pass :Not enough parameters"
+	if (message.params.size() < 1 || message.params[0].empty()) {
+		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "PASS") + "\r\n");
+		return ;
+	}
 	
 	param = *(message.params.begin());
-	if (serverData->verifyPassword(param))
+	if (serverData->verifyPassword(param)) {
 		executer->setAuth(true);
-	else
-		return ; //464 ERR_PASSWDMISMATCH
+	} else {
+		this->sendToExecuter(ERR_PASSWDMISMATCH(nick) + "\r\n");
+		return ;
+	}
 }
 

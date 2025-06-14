@@ -48,5 +48,5 @@ class Mode : public AbstractCommand {
 
 		void executeCmd();
 		std::string getMode(Client* client);
-		std::string Mode::getMode(Channel* channel);
+		std::string getMode(Channel* channel);
 };

@@ -5,10 +5,6 @@ ServerData::ServerData() {
 }
 
 ServerData::~ServerData() {
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
-		delete *it;
-	}
-
 	for (std::vector<Channel*>::iterator it =  channels.begin(); it != channels.end(); ++it) {
 		delete *it;
 	}
@@ -36,12 +32,6 @@ void ServerData::setPassword(std::string password) {
 
 bool ServerData::verifyPassword(std::string password) {
 	return this->password == password;
-}
-
-void ServerData::setClient(Client *client) {
-	if (client == NULL)
-		return;
-	this->clients.push_back(client);
 }
 
 Client* ServerData::getClientByFd(int fd) {

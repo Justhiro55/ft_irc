@@ -1,4 +1,5 @@
-#include "Channel.hpp"
+#include "../includes/Channel.hpp"
+#include "../includes/Client.hpp"
 
 Channel::Channel() {}
 
@@ -25,7 +26,8 @@ void Channel::addInvite_list(const std::string &invitee) {
 }
 
 bool Channel::isInvited(const std::string &nickname) const {
-
+	(void)nickname; // Todo
+	return true;
 }
 
 void Channel::setOperator(Client *member) {

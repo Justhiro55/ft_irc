@@ -1,4 +1,5 @@
 #include "../includes/irc.hpp"
+#include "../includes/Command.hpp"
 
 // Constructor
 IRCServer::IRCServer(int server_port, const std::string& server_password)
@@ -96,6 +97,7 @@ void IRCServer::start() {
             // 送信データの処理
             if (poll_fds[i].revents & POLLOUT) {
                 if (poll_fds[i].fd != server_fd) {
+                    std::cout << "POLLOUT event for client " << poll_fds[i].fd << std::endl;
                     handle_client_send(poll_fds[i].fd);
                 }
             }
@@ -138,7 +140,7 @@ void IRCServer::handle_new_connection() {
 
         if (client_fd >= 0) {
             std::string client_ip = inet_ntoa(client_addr.sin_addr);
-            int client_port = ntohs(client_addr.sin_port);
+            (void)ntohs(client_addr.sin_port);
 
             std::cout << "Connection limit reached." << std::endl;
 
@@ -275,7 +277,19 @@ void IRCServer::parse_messages(int client_fd) {
 
     // Process complete messages in buffer
     size_t pos = 0;
-    while ((pos = buffer.find("\r\n")) != std::string::npos) {
+    size_t crlf_pos = buffer.find("\r\n");
+    size_t lf_pos = buffer.find("\n");
+    
+    // Find the earliest line ending
+    if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
+        pos = crlf_pos;
+    } else if (lf_pos != std::string::npos) {
+        pos = lf_pos;
+    } else {
+        pos = std::string::npos;
+    }
+    
+    while (pos != std::string::npos) {
         size_t message_length = pos;
         if (message_length > MESSAGE_MAX_LEN) {
             std::cout << "Message too long (" << message_length
@@ -289,10 +303,22 @@ void IRCServer::parse_messages(int client_fd) {
         std::string message = buffer.substr(0, pos);
 
         // バッファから処理済みメッセージ削除
-        buffer.erase(0, pos + 2);
+        bool is_crlf = (pos < buffer.length() - 1 && buffer[pos] == '\r' && buffer[pos + 1] == '\n');
+        buffer.erase(0, pos + (is_crlf ? 2 : 1));
 
         // Skip empty messages
         if (message.empty()) {
+            std::cout << "Skipping empty message" << std::endl;
+            // Find next line ending
+            crlf_pos = buffer.find("\r\n");
+            lf_pos = buffer.find("\n");
+            if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
+                pos = crlf_pos;
+            } else if (lf_pos != std::string::npos) {
+                pos = lf_pos;
+            } else {
+                pos = std::string::npos;
+            }
             continue;
         }
 
@@ -314,10 +340,21 @@ void IRCServer::parse_messages(int client_fd) {
 
         std::cout << "Message added to recvQueue - Command: " << parsed_message.command
                   << ", Params: " << parsed_message.params.size() << std::endl;
-
-        std::string echo_message = "ECHO :" + message + "\r\n";
-        send_to_client(client_fd, echo_message);
+                  
+        // Find next line ending
+        crlf_pos = buffer.find("\r\n");
+        lf_pos = buffer.find("\n");
+        if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
+            pos = crlf_pos;
+        } else if (lf_pos != std::string::npos) {
+            pos = lf_pos;
+        } else {
+            pos = std::string::npos;
+        }
     }
+    
+    // Process all commands in the receive queue
+    process_commands(client_fd);
 
     // Check buffer size to prevent memory issues
     if (buffer.length() > BUFFER_SIZE * 2) {
@@ -336,9 +373,13 @@ void IRCServer::handle_client_send(int client_fd) {
     Client* client = it->second;
     std::queue<std::string>& sendQueue = client->getSendQueue();
 
+    std::cout << "handle_client_send: " << sendQueue.size() << " messages in queue" << std::endl;
+
     // 送信キューにあるメッセージを処理
     while (!sendQueue.empty()) {
         const std::string& message = sendQueue.front();
+        
+        std::cout << "Sending: " << message << std::endl;
 
         ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
 
@@ -405,4 +446,50 @@ ServerData* IRCServer::getServerData() {
 
 const std::string& IRCServer::get_password() const {
     return password;
+}
+
+void IRCServer::process_commands(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it == clients.end()) {
+        return;
+    }
+
+    Client* client = it->second;
+    std::queue<Message>& recvQueue = client->getRecvQueue();
+
+    while (!recvQueue.empty()) {
+        Message message = recvQueue.front();
+        recvQueue.pop();
+
+        std::cout << "Processing command: " << message.command << std::endl;
+
+        AbstractCommand* command = createCommand(message.command);
+        if (command) {
+            command->setMessage(message);
+            command->setServerData(serverData);
+            command->setExecuter(client);
+            command->executeCmd();
+            delete command;
+            
+            // Check if there are messages to send
+            if (!client->getSendQueue().empty()) {
+                std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
+                // Force send immediately
+                handle_client_send(client_fd);
+            }
+        } else {
+            std::cout << "Unknown command: " << message.command << std::endl;
+        }
+    }
+}
+
+AbstractCommand* IRCServer::createCommand(const std::string& command) {
+    if (command == "PASS") {
+        return new Pass();
+    } else if (command == "NICK") {
+        return new Nick();
+    } else if (command == "USER") {
+        return new User();
+    }
+    return NULL;
 }

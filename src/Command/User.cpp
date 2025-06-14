@@ -6,19 +6,36 @@ User::~User() {}
 
 void User::executeCmd() {
 
-	if (this->executer->getAuth())
-		return sendToExecuter(ERR_RESTRICTED(this->executer->getNickname())); ; // こんな感じでReply.hppにdefineして使う方でも、、いいすか？
+	std::string nick = this->executer->getNickname().empty() ? "*" : this->executer->getNickname();
 
-	if (!this->executer->getRegister())
-		return ; // 462  ERR_ALREADYREGISTRED ":Unauthorized command (already registered)"
-
-	if (message.params.size() != 4)
+	if (!this->executer->getAuth()) {
+		this->sendToExecuter(ERR_NOTREGISTERED(nick) + "\r\n");
 		return ;
+	}
+
+	if (this->executer->getRegister()) {
+		this->sendToExecuter(ERR_ALREADYREGISTRED(nick) + "\r\n");
+		return ;
+	}
+
+	if (message.params.size() != 4) {
+		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "USER") + "\r\n");
+		return ;
+	}
+
+	// Validate parameters are not empty
+	if (message.params[0].empty() || message.params[1].empty() || 
+		message.params[2].empty() || message.params[3].empty()) {
+		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "USER") + "\r\n");
+		return ;
+	}
 
 	this->executer->setUsername(message.params[0]);
 	this->executer->setHost(message.params[1]);
 	this->executer->setServer(message.params[2]);
 	this->executer->setRealname(message.params[3]);
 
-	this->executer->setRegister(true);
+	if (this->executer->checkAndCompleteRegistration()) {
+		this->sendWelcomeMessages();
+	}
 }
