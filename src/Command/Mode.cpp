@@ -31,7 +31,9 @@ void Mode::executeCmd() {
 			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getMode(channel)) + "\r\n");
 
 		std::string applied_modes = setModes(channel);
-		channel->sendToMembers(RPL_CHANNELMODECHANGE(executer->getNickname(), executer->getUsername(), executer->getHost(), channel_name, applied_modes));
+		if (applied_modes.empty() || applied_modes.size() == 1)
+			return;
+		channel->sendToMembers(RPL_CHANNELMODECHANGE(executer->getNickname(), executer->getUsername(), executer->getHost(), channel_name, applied_modes), "");
     }
 	else {
 		Client* client;
@@ -49,6 +51,8 @@ void Mode::executeCmd() {
 		if (params_size == 1)
 			return sendToExecuter(RPL_UMODEIS(client->getNickname(), getMode(client)));
 		std::string applied_modes = setModes(client);
+		if (applied_modes.empty() || applied_modes.size() == 1)
+			return;
 		sendToExecuter(PRL_UMODECHANGE(client->getNickname(), applied_modes));
 	}
 }
@@ -56,7 +60,6 @@ void Mode::executeCmd() {
 std::string Mode::setModes(Channel *target) {
 
 	bool	plus_flag;
-	ssize_t params_size = message.params.size();
 	std::string	applied_modes;
 	
 	if (message.params[1][0] == '+')
@@ -66,12 +69,12 @@ std::string Mode::setModes(Channel *target) {
 	else
 		return NULL;
 	applied_modes.append(1, message.params[1][0]);
-	message.params[1].erase(0, 1);
+	message.params[1].erase(0, 1); //これよくないね
 
 	std::vector<std::string>::iterator	mode_params_it = message.params.begin();
 	std::advance(mode_params_it, 2);
 
-	for (int i = 0; i < message.params[1].size(); i++) {
+	for (size_t i = 0; i < message.params[1].size(); i++) {
 		if (message.params[1][i] == 'i') {
 			if (plus_flag)
 				target->setMode(MODE_INVITE);
@@ -147,11 +150,11 @@ std::string Mode::setModes(Channel *target) {
 			return applied_modes;
 		}
 	}
+	return applied_modes;
 }
 
 std::string Mode::setModes(Client *target) {
 	bool	plus_flag;
-	ssize_t params_size = message.params.size();
 	std::string	applied_modes;
 	
 	if (message.params[1][0] == '+')
@@ -166,7 +169,7 @@ std::string Mode::setModes(Client *target) {
 	std::vector<std::string>::iterator	mode_params_it = message.params.begin();
 	std::advance(mode_params_it, 2);
 
-	for (int i = 0; i < message.params[1].size(); i++) {
+	for (size_t i = 0; i < message.params[1].size(); i++) {
 		if (message.params[1][i] == 'o') {
 			if (!target->hasMode(USER_MODE_OPERATOR)){
 					return applied_modes;
@@ -188,6 +191,7 @@ std::string Mode::setModes(Client *target) {
 			return applied_modes;
 		}
 	}
+	return applied_modes;
 }
 
 

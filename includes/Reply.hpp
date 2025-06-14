@@ -30,6 +30,14 @@
 #define ERR_UMODEUNKNOWNFLAG std::string("501 ") + "Unknown MODE flag"
 #define	RPL_UMODEIS(nick, modes) "221 " + nick + " :" + modes  
 #define	PRL_UMODECHANGE(nick, modes) "MODE " + nick + " :" + modes 
+
+// Privmsg
+#define ERR_NORECIPIENT(command) std::string("411 ") + ":No recipient given " + command
+#define ERR_NOTEXTTOSEND   std::string("412 ") + ":No text to send"
+
+#define MSG_PRIVMSG(sender_nick, sender_user, sender_host, channel, message) \
+    std::string(":") + sender_nick + sender_user + sender_host + \
+    " PRIVMSG " + channel + " :" + message + "\r\n"
 // Common errors
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"

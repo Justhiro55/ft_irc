@@ -52,3 +52,11 @@ class Mode : public AbstractCommand {
 		std::string getMode(Client* client);
 		std::string getMode(Channel* channel);
 };
+
+class Privmsg : public AbstractCommand {
+	public:
+		Privmsg();
+		~Privmsg();
+
+	void executeCmd();
+};

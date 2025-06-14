@@ -35,7 +35,7 @@ class Channel {
 		void unsetMember(Client *member);
 		bool isMember(const std::string &nick);
 
-		void sendToMembers(const std::string &reply);
+		void sendToMembers(const std::string &reply, const std::string &excluded_nick);
 
 		void setPassword(std::string &password);
 		void unsetPassword();
