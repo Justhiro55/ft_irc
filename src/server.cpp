@@ -179,8 +179,6 @@ void IRCServer::handle_new_connection() {
     std::cout << "New connection from " << client_ip << ":" << client_port
               << " (fd: " << client_fd << ") - Total: "
               << clients.size() << "/" << MAX_CLIENTS << std::endl;
-
-    send_to_client(client_fd, "ft_irc server ready\r\n");
 }
 
 void IRCServer::add_client(int client_fd, const std::string& ip, int port) {
@@ -490,6 +488,12 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Nick();
     } else if (command == "USER") {
         return new User();
+    } else if (command == "JOIN") {
+        return new Join();
+    } else if (command == "INVITE") {
+        return new Invite();
+    } else if (command == "KICK") {
+        return new Kick();
     }
     return NULL;
 }

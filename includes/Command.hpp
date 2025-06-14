@@ -2,11 +2,6 @@
 
 #include "AbstractCommand.hpp"
 
-#include <string>
-#include <cctype>
-#include <sstream> 
-#include <utility>
-
 class Nick : public AbstractCommand {
 	public:
 		Nick();
@@ -49,4 +44,20 @@ class Mode : public AbstractCommand {
 		void executeCmd();
 		std::string getMode(Client* client);
 		std::string getMode(Channel* channel);
+};
+
+class Invite : public AbstractCommand {
+	public:
+		Invite();
+		~Invite();
+
+		void executeCmd();
+};
+
+class Kick : public AbstractCommand {
+	public:
+		Kick();
+		~Kick();
+
+		void executeCmd();
 };
