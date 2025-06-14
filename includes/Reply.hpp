@@ -17,7 +17,23 @@
 #define ERR_UNAVAILRESOURCE(nick, resource) "437 " + nick + " " + resource + " :Nick/channel is temporarily unavailable"
 #define ERR_RESTRICTED(executer) "484 " + executer + " :Your connection is restricted!"
 
+//MODE channle
+#define ERR_CHANOPRIVSNEEDED(channel) "482 " + channel + " :You're not channel operator"
+#define ERR_UNKNOWNMODE(mode, channel) std::string("472 ") + mode + " :is unknown mode char to me for " + channel
+#define ERR_USERNOTINCHANNEL(nick, channel) "441 " + nick + " " + channel + " :They aren't on that channel"
+#define ERR_KEYSET(channel) "467 " +  channel + " :Channel key already set"
+#define RPL_CHANNELMODEIS(nick, channel, modes) "324 " + nick + " " + channel + " " + modes
+#define RPL_CHANNELMODECHANGE(nick, user, host, channel, mode_changes) nick + "!" + user + "@" + host + " MODE " + channel + " :" + mode_changes
+
+//MODE user
+#define ERR_USERSDONTMATCH(client) "502 " + client + " :Cannot change mode for other users"
+#define ERR_UMODEUNKNOWNFLAG std::string("501 ") + "Unknown MODE flag"
+#define	RPL_UMODEIS(nick, modes) "221 " + nick + " :" + modes  
+#define	PRL_UMODECHANGE(nick, modes) "MODE " + nick + " :" + modes 
 // Common errors
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"
 #define ERR_NOTREGISTERED(nick) "451 " + nick + " :You have not registered"
+#define ERR_NOSUCHCHANNEL(channel) "403 " + channel + " :No such channel"
+#define ERR_NOSUCHNICK(nick) "401 " + nick + " :No such nick/channel"
+

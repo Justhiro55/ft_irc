@@ -11,7 +11,6 @@
 #define MODE_TOPICLOCK  (1 << 1)   // 00010   +t（トピック固定）
 #define MODE_KEY        (1 << 2)   // 00100   +k（鍵付き）
 #define MODE_LIMIT      (1 << 3)   // 01000   +l（人数制限あり）
-#define MODE_OPERATOR	(1 << 4)   // 10000   +o (オペレーター権限付与)
 
 class Client ;
 
@@ -21,7 +20,7 @@ class Channel {
 		std::map<Client *, unsigned char> members;
 		std::vector<std::string> invite_list;
 		std::string	topic;
-		int	members_limit;
+		size_t members_limit;
 		std::string	password;
 		unsigned short modes;
 	public:
@@ -32,16 +31,28 @@ class Channel {
 
 		Client* getMemberByNick(const std::string &nick) const;
 		unsigned char getMemberMode(const std::string &nick) const;
-		void setPassword(std::string password);
+		void setMemberMode(const std::string &nick, unsigned char mode);
 		void unsetMember(Client *member);
-		void setOperator(Client *member);
 		bool isMember(const std::string &nick);
+
+		void sendToMembers(const std::string &reply);
+
+		void setPassword(std::string &password);
+		void unsetPassword();
+		bool isPasswordSet() const;
+
+		void setOperator(Client *member);
 		bool isOperatorMember(const std::string &nick);
 		void setVoice(Client *member);
-		void setMode(unsigned short mode);
+
 		void addInvite_list(const std::string &invitee);
 		bool isInvited(const std::string &nickname) const;
+
+		void setLimit(size_t limit);
+
+		void setMode(unsigned short mode);
 		void unsetMode(unsigned short mode);
 		bool hasMode(unsigned short mode);
+
 		bool verifyPassword(const std::string &password) const;
 };

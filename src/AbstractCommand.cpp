@@ -34,13 +34,13 @@ void AbstractCommand::sendToExecuter(const std::string &reply) {
 	executer->pushToSendQueue(reply);
 }
 
-void AbstractCommand::sendToClient(Client *client, std::string &reply) {
+void AbstractCommand::sendToClient(Client *client, const std::string &reply) {
 	if (reply.empty())
 		return ;
 	client->pushToSendQueue(reply);
 }
 
-void AbstractCommand::sentToClients(std::vector<Client *> clients, std::string &reply) {
+void AbstractCommand::sentToClients(std::vector<Client *> clients, const std::string &reply) {
 	if (clients.size() <= 0 || reply.empty())
 		return;
 	

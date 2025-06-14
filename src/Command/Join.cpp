@@ -37,7 +37,6 @@ void Join::executeCmd() {
 	for(std::vector<std::pair<std::string, std::string>>::iterator it = param_channels.begin(); it != param_channels.end(); ++it) {
 		if (!isValidChannelName(it->first))
 			continue ; // error
-		it->first.erase(0, 1);
 		Channel * channel = serverData->getChannelByName(it->first);
 		if (channel == NULL) {
 			try {
