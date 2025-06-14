@@ -30,6 +30,7 @@ class Channel {
 		std::string getName();
 
 		Client* getMemberByNick(const std::string &nick) const;
+		bool isOperator(Client *member) const;
 		void setPassword(std::string password);
 		void unsetMember(Client *member);
 		void setOperator(Client *member);
