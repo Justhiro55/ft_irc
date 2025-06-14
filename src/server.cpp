@@ -15,14 +15,6 @@ IRCServer::~IRCServer() {
     delete serverData;
 }
 
-void IRCServer::die_with_error(const char* msg, int fd)
-{
-    if (fd > 2)
-        close(fd);
-    perror(msg);
-    exit(EXIT_FAILURE);
-}
-
 int IRCServer::create_socket() {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
@@ -249,12 +241,10 @@ void IRCServer::handle_client_data(int client_fd) {
     std::string data(buffer);
 
     // Find client
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it == clients.end()) {
+    Client* client = findClient(client_fd);
+    if (!client) {
         return; // Client not found
     }
-
-    Client* client = it->second;
 
     client->getBuffer() += data;
 
@@ -265,27 +255,14 @@ void IRCServer::handle_client_data(int client_fd) {
 }
 
 void IRCServer::parse_messages(int client_fd) {
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it == clients.end()) {
+    Client* client = findClient(client_fd);
+    if (!client) {
         return; // Client not found
     }
-
-    Client* client = it->second;
     std::string& buffer = client->getBuffer();
 
     // Process complete messages in buffer
-    size_t pos = 0;
-    size_t crlf_pos = buffer.find("\r\n");
-    size_t lf_pos = buffer.find("\n");
-    
-    // Find the earliest line ending
-    if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
-        pos = crlf_pos;
-    } else if (lf_pos != std::string::npos) {
-        pos = lf_pos;
-    } else {
-        pos = std::string::npos;
-    }
+    size_t pos = findLineEnd(buffer);
     
     while (pos != std::string::npos) {
         size_t message_length = pos;
@@ -308,15 +285,7 @@ void IRCServer::parse_messages(int client_fd) {
         if (message.empty()) {
             std::cout << "Skipping empty message" << std::endl;
             // Find next line ending
-            crlf_pos = buffer.find("\r\n");
-            lf_pos = buffer.find("\n");
-            if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
-                pos = crlf_pos;
-            } else if (lf_pos != std::string::npos) {
-                pos = lf_pos;
-            } else {
-                pos = std::string::npos;
-            }
+            pos = findLineEnd(buffer);
             continue;
         }
 
@@ -340,15 +309,7 @@ void IRCServer::parse_messages(int client_fd) {
                   << ", Params: " << parsed_message.params.size() << std::endl;
                   
         // Find next line ending
-        crlf_pos = buffer.find("\r\n");
-        lf_pos = buffer.find("\n");
-        if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
-            pos = crlf_pos;
-        } else if (lf_pos != std::string::npos) {
-            pos = lf_pos;
-        } else {
-            pos = std::string::npos;
-        }
+        pos = findLineEnd(buffer);
     }
     
     // Process all commands in the receive queue
@@ -363,12 +324,10 @@ void IRCServer::parse_messages(int client_fd) {
 }
 
 void IRCServer::handle_client_send(int client_fd) {
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it == clients.end()) {
+    Client* client = findClient(client_fd);
+    if (!client) {
         return; // Client not found
     }
-
-    Client* client = it->second;
     std::queue<std::string>& sendQueue = client->getSendQueue();
 
     std::cout << "handle_client_send: " << sendQueue.size() << " messages in queue" << std::endl;
@@ -413,12 +372,10 @@ void IRCServer::handle_client_send(int client_fd) {
 }
 
 void IRCServer::send_to_client(int client_fd, const std::string& message) {
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it == clients.end()) {
+    Client* client = findClient(client_fd);
+    if (!client) {
         return; // Client not found
     }
-
-    Client* client = it->second;
     client->pushToSendQueue(message);
 
     // 送信可能になったらpoll()で監視できるようにPOLLOUTを設定
@@ -431,11 +388,7 @@ void IRCServer::send_to_client(int client_fd, const std::string& message) {
 }
 
 Client* IRCServer::getClient(int client_fd) {
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it != clients.end()) {
-        return it->second;
-    }
-    return NULL;
+    return findClient(client_fd);
 }
 
 ServerData* IRCServer::getServerData() {
@@ -447,12 +400,10 @@ const std::string& IRCServer::get_password() const {
 }
 
 void IRCServer::process_commands(int client_fd) {
-    std::map<int, Client*>::iterator it = clients.find(client_fd);
-    if (it == clients.end()) {
+    Client* client = findClient(client_fd);
+    if (!client) {
         return;
     }
-
-    Client* client = it->second;
     std::queue<Message>& recvQueue = client->getRecvQueue();
 
     while (!recvQueue.empty()) {
@@ -497,3 +448,33 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
     }
     return NULL;
 }
+
+// Helper functions
+void IRCServer::die_with_error(const char* msg, int fd)
+{
+    if (fd > 2)
+        close(fd);
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
+
+Client* IRCServer::findClient(int client_fd) {
+    std::map<int, Client*>::iterator it = clients.find(client_fd);
+    if (it != clients.end()) {
+        return it->second;
+    }
+    return NULL;
+}
+
+size_t IRCServer::findLineEnd(const std::string& buffer) {
+    size_t crlf_pos = buffer.find("\r\n");
+    size_t lf_pos = buffer.find("\n");
+    
+    if (crlf_pos != std::string::npos && (lf_pos == std::string::npos || crlf_pos <= lf_pos)) {
+        return crlf_pos;
+    } else if (lf_pos != std::string::npos) {
+        return lf_pos;
+    }
+    return std::string::npos;
+}
+
