@@ -61,7 +61,7 @@ void IRCServer::setup_server() {
 void IRCServer::start() {
     while (true) {
         // timeout of 1 second
-        int poll_result = poll(&poll_fds[0], poll_fds.size(), 1000);
+        int poll_result = poll(&poll_fds[0], poll_fds.size(), POLL_TIMEOUT);
 
         if (poll_result < 0) {
             perror("poll() failed");

@@ -33,6 +33,7 @@ class dupServer {
 #define BUFFER_SIZE 1024
 #define MESSAGE_MAX_LEN 512
 #define MAX_CLIENTS 128
+#define POLL_TIMEOUT 1000 // 1s
 
 class AbstractCommand;
 
