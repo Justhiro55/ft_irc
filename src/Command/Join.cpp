@@ -37,6 +37,7 @@ void Join::executeCmd() {
 	for(std::vector<std::pair<std::string, std::string>>::iterator it = param_channels.begin(); it != param_channels.end(); ++it) {
 		if (!isValidChannelName(it->first))
 			continue ; // error
+		it->first.erase(0, 1);
 		Channel * channel = serverData->getChannelByName(it->first);
 		if (channel == NULL) {
 			try {
@@ -70,7 +71,7 @@ bool isValidChannelName(const std::string& channel_name) {
     if (channel_name.empty() || channel_name.length() > 50)
         return false;
 
-    if (channel_name[0] != '#')
+    if (channel_name[0] != '#' && channel_name[0] != '&')
         return false;
 
 

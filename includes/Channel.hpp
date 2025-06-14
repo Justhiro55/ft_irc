@@ -5,6 +5,7 @@
 #include "vector"
 #include "string"
 #include "iostream"
+#include "Client.hpp"
 
 #define MODE_INVITE     (1 << 0)   // 00001   +i (招待制限)  
 #define MODE_TOPICLOCK  (1 << 1)   // 00010   +t（トピック固定）
@@ -30,9 +31,12 @@ class Channel {
 		std::string getName();
 
 		Client* getMemberByNick(const std::string &nick) const;
+		unsigned char getMemberMode(const std::string &nick) const;
 		void setPassword(std::string password);
 		void unsetMember(Client *member);
 		void setOperator(Client *member);
+		bool isMember(const std::string &nick);
+		bool isOperatorMember(const std::string &nick);
 		void setVoice(Client *member);
 		void setMode(unsigned short mode);
 		void addInvite_list(const std::string &invitee);

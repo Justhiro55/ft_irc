@@ -76,7 +76,7 @@ bool Client::getRegister() {
     return this->isRegister;
 }
 
-std::string Client::getNickname() {
+std::string Client::getNickname() const {
     return this->nickname;
 }
 

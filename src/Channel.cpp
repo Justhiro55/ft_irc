@@ -32,8 +32,30 @@ void Channel::setOperator(Client *member) {
 	members.insert(std::make_pair(member, 'o'));
 }
 
+bool Channel::isMember(const std::string &nick) {
+	Client *member = getMemberByNick(nick);
+	if (member == NULL)
+		return false;
+	return true;
+}
+
+bool Channel::isOperatorMember(const std::string &nick) {
+	unsigned char mode = getMemberMode(nick);
+	if (mode == 'o')
+		return true;
+	return false;
+}
+
 void Channel::setVoice(Client *member) {
 	members.insert(std::make_pair(member, 'v'));
+}
+
+unsigned char Channel::getMemberMode(const std::string &nick) const {
+	for (std::map<Client*, unsigned char>::const_iterator it = members.begin(); it != members.end(); ++it) {
+		if (it->first->getNickname() == nick)
+			return it->second;
+	}
+	return NULL;
 }
 
 Client* Channel::getMemberByNick(const std::string &nick) const {
