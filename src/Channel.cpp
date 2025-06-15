@@ -3,12 +3,18 @@
 
 Channel::Channel() {}
 
-Channel::Channel(std::string name) : name(name){}
+Channel::Channel(std::string name) : name(name), members_limit(0), modes(0) {
+	(void)members_limit;
+}
 
 Channel::~Channel() {}
 
 std::string Channel::getName() {
 	return this->name;
+}
+
+void Channel::setPassword(std::string password) {
+	this->password = password;
 }
 
 bool Channel::verifyPassword(const std::string &password) const {
@@ -26,8 +32,7 @@ void Channel::addInvite_list(const std::string &invitee) {
 }
 
 bool Channel::isInvited(const std::string &nickname) const {
-	(void)nickname; // Todo
-	return true;
+	return std::find(invite_list.begin(), invite_list.end(), nickname) != invite_list.end();
 }
 
 void Channel::setOperator(Client *member) {
@@ -44,6 +49,14 @@ Client* Channel::getMemberByNick(const std::string &nick) const {
 			return it->first;
 	}
 	return NULL;
+}
+
+bool Channel::isOperator(Client *member) const {
+	std::map<Client*, unsigned char>::const_iterator it = members.find(member);
+	if (it != members.end()) {
+		return it->second == 'o';
+	}
+	return false;
 }
 
 void Channel::setMode(unsigned short mode) {
