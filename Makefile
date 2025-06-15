@@ -6,18 +6,8 @@ SRC_DIR = src
 SRC = main.cpp \
       server.cpp \
       Client.cpp \
-      Channel.cpp \
       ServerData.cpp \
-      Message.cpp \
-      AbstractCommand.cpp \
-      Command/Pass.cpp \
-      Command/Nick.cpp \
-      Command/User.cpp \
-	  Command/Mode.cpp \
-	  Command/Privmsg.cpp \
-	  Command/Notice.cpp \
-	  Command/Topic.cpp \
-	  Command/Part.cpp
+      Message.cpp
 
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
@@ -28,7 +18,6 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -I./includes -c $< -o $@
 
 $(NAME): $(OBJ)
