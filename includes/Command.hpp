@@ -59,4 +59,15 @@ class Privmsg : public AbstractCommand {
 		~Privmsg();
 
 	void executeCmd();
+	void removeDuplicates(std::vector<std::string>& vec);
 };
+
+class Notice : public AbstractCommand {
+	public:
+		Notice();
+		~Notice();
+	
+	void executeCmd();
+		void removeDuplicates(std::vector<std::string>& vec);
+};
+

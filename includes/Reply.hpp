@@ -34,10 +34,18 @@
 // Privmsg
 #define ERR_NORECIPIENT(command) std::string("411 ") + ":No recipient given " + command
 #define ERR_NOTEXTTOSEND   std::string("412 ") + ":No text to send"
+#define ERR_TOOMANYTARGETS(nick, target) std::string("403 ") + nick + " " + target + " :Duplicate recipients. No message delivered"
+#define ERR_CANNOTSENDTOCHAN(nick, channel) std::string("404 ") + nick + " " + channel + " :Cannot send to channel"
 
 #define MSG_PRIVMSG(sender_nick, sender_user, sender_host, channel, message) \
     std::string(":") + sender_nick + sender_user + sender_host + \
     " PRIVMSG " + channel + " :" + message + "\r\n"
+
+// Notice
+#define MSG_NOTICE(sender_nick, sender_user, sender_host, channel, message) \
+    std::string(":") + sender_nick + sender_user + sender_host + \
+    " NOTICE " + channel + " :" + message + "\r\n"
+
 // Common errors
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"
