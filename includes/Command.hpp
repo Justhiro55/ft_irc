@@ -47,6 +47,43 @@ class Mode : public AbstractCommand {
 		~Mode();
 
 		void executeCmd();
+		std::string setModes(Client *target);
+		std::string setModes(Channel *target);
 		std::string getMode(Client* client);
 		std::string getMode(Channel* channel);
+};
+int atoi_checked(std::string literal);
+
+class Topic : public AbstractCommand {
+	public:
+		Topic();
+		~Topic();
+
+		void executeCmd();
+};
+
+class Privmsg : public AbstractCommand {
+	public:
+		Privmsg();
+		~Privmsg();
+
+		void executeCmd();
+		void removeDuplicates(std::vector<std::string>& vec);
+};
+
+class Notice : public AbstractCommand {
+	public:
+		Notice();
+		~Notice();
+	
+		void executeCmd();
+		void removeDuplicates(std::vector<std::string>& vec);
+};
+
+class Part : public AbstractCommand {
+	public:
+		Part();
+		~Part();
+
+		void executeCmd();
 };

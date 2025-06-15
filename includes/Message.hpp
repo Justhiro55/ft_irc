@@ -9,7 +9,7 @@ class Message {
 		std::vector<std::string> params;
 		std::string command;
 		std::string prefix;
-		std::string trailing;
+		bool trailing;
 		std::string error;
 		
 		Message();

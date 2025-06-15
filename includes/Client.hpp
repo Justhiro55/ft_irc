@@ -25,8 +25,6 @@ class Client {
 
 		unsigned short modes;
 
-		std::vector<Channel *> join_channels; 
-
 		std::string receiveBuffer;
 		std::queue<Message>		recvQueue;
 		std::queue<std::string> sendQueue;

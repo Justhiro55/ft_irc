@@ -55,7 +55,6 @@ Client* ServerData::getClientByNickname(std::string &nick) {
 	return NULL;
 }
 
-
 void ServerData::setChannel(Channel *channel) {
 	if (channel == NULL)
 		return;

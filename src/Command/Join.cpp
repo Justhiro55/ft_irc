@@ -70,7 +70,7 @@ bool isValidChannelName(const std::string& channel_name) {
     if (channel_name.empty() || channel_name.length() > 50)
         return false;
 
-    if (channel_name[0] != '#')
+    if (channel_name[0] != '#' && channel_name[0] != '&')
         return false;
 
 
