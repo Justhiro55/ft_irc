@@ -24,11 +24,13 @@ void Mode::executeCmd() {
         channel = serverData->getChannelByName(channel_name);
 		if (channel == NULL)
 			return sendToExecuter(ERR_NOSUCHCHANNEL(channel_name) + "\r\n");
-		if (channel->isOperatorMember(executer->getNickname()))
-			return sendToExecuter(ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
-
+		if (!channel->isMember(executer->getNickname()))
+			return sendToExecuter(ERR_NOTONCHANNEL(channel->getName()) + "\r\n");
 		if (params_size == 1)
 			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getMode(channel)) + "\r\n");
+
+		if (channel->isOperatorMember(executer->getNickname()))
+			return sendToExecuter(ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
 
 		std::string applied_modes = setModes(channel);
 		if (applied_modes.empty() || applied_modes.size() == 1)
@@ -116,10 +118,15 @@ std::string Mode::setModes(Channel *target) {
 					sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
 					return applied_modes;
 				}
+				int limit = atoi_checked(*mode_params_it);
+				if (limit < 1) {
+					sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
+					return applied_modes;
+				}
 				target->setMode(MODE_LIMIT);
-				target->setLimit(15); // validater追加
+				target->setLimit(limit); // validater追加
 				++ mode_params_it;
-				applied_modes.append("k");
+				applied_modes.append("l");
 			}
 			else
 				target->unsetMode(MODE_TOPICLOCK);
@@ -138,7 +145,7 @@ std::string Mode::setModes(Channel *target) {
 				}
 				target->setMemberMode(*mode_params_it, 'o');
 				++ mode_params_it;
-				applied_modes.append("k");
+				applied_modes.append("o");
 			}
 			else
 				target->setMemberMode(*mode_params_it, 'v');
@@ -213,4 +220,20 @@ std::string Mode::getMode( Channel* channel ) {
     modeFlag.append( ( channel->hasMode(MODE_TOPICLOCK)) ? "t" : "" );
 
     return modeFlag;
+}
+
+int atoi_checked(std::string literal) {
+   long l;
+
+	for (size_t i = 0 ; literal[i] != '\0'; i ++) {
+		if (!std::isdigit(literal[i])) {
+			return -1;
+		}
+	}
+
+	l = atol(literal.c_str());
+	if (l > INT_MAX)
+		return INT_MAX;
+	else
+		return l;
 }

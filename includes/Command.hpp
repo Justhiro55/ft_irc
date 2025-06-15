@@ -52,14 +52,23 @@ class Mode : public AbstractCommand {
 		std::string getMode(Client* client);
 		std::string getMode(Channel* channel);
 };
+int atoi_checked(std::string literal);
+
+class Topic : public AbstractCommand {
+	public:
+		Topic();
+		~Topic();
+
+		void executeCmd();
+};
 
 class Privmsg : public AbstractCommand {
 	public:
 		Privmsg();
 		~Privmsg();
 
-	void executeCmd();
-	void removeDuplicates(std::vector<std::string>& vec);
+		void executeCmd();
+		void removeDuplicates(std::vector<std::string>& vec);
 };
 
 class Notice : public AbstractCommand {
@@ -67,7 +76,14 @@ class Notice : public AbstractCommand {
 		Notice();
 		~Notice();
 	
-	void executeCmd();
+		void executeCmd();
 		void removeDuplicates(std::vector<std::string>& vec);
 };
 
+class Part : public AbstractCommand {
+	public:
+		Part();
+		~Part();
+
+		void executeCmd();
+};

@@ -131,3 +131,15 @@ void Channel::sendToMembers(const std::string &reply, const std::string &exclude
 			it->first->pushToSendQueue(reply);
 	}
 }
+
+std::string Channel::getTopic() const {
+	return this->topic;
+}
+
+void Channel::setTopic(std::string topic) {
+	this->topic = topic;
+}
+
+void Channel::clearTopic() {
+	this->topic.clear();
+}

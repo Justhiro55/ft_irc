@@ -55,4 +55,8 @@ class Channel {
 		bool hasMode(unsigned short mode);
 
 		bool verifyPassword(const std::string &password) const;
+
+		std::string getTopic() const;
+		void setTopic(std::string topic);
+		void clearTopic();
 };

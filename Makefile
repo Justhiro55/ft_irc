@@ -13,7 +13,11 @@ SRC = main.cpp \
       Command/Pass.cpp \
       Command/Nick.cpp \
       Command/User.cpp \
-	  Command/Mode.cpp
+	  Command/Mode.cpp \
+	  Command/Privmsg.cpp \
+	  Command/Notice.cpp \
+	  Command/Topic.cpp \
+	  Command/Part.cpp
 
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
