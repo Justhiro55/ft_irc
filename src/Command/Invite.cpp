@@ -20,12 +20,12 @@ void Invite::executeCmd() {
 
 	Channel* channel = serverData->getChannelByName(channel_name);
 	if (!channel) {
-		sendToExecuter("403 " + executer->getNickname() + " " + channel_name + " :No such channel\r\n");
+		sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
 	if (!channel->getMemberByNick(executer->getNickname())) {
-		sendToExecuter("442 " + executer->getNickname() + " " + channel_name + " :You're not on that channel\r\n");
+		sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
@@ -34,18 +34,18 @@ void Invite::executeCmd() {
 
 	Client* target_client = serverData->getClientByNickname(target_nick);
 	if (!target_client) {
-		sendToExecuter("401 " + executer->getNickname() + " " + target_nick + " :No such nick/channel\r\n");
+		sendToExecuter(ERR_NOSUCHNICK(executer->getNickname(), target_nick) + "\r\n");
 		return;
 	}
 
 	if (channel->getMemberByNick(target_nick)) {
-		sendToExecuter("443 " + executer->getNickname() + " " + target_nick + " " + channel_name + " :is already on channel\r\n");
+		sendToExecuter(ERR_USERONCHANNEL(executer->getNickname(), target_nick, channel_name) + "\r\n");
 		return;
 	}
 
 	channel->addInvite_list(target_nick);
 
-	sendToExecuter("341 " + executer->getNickname() + " " + channel_name + " " + target_nick + "\r\n");
+	sendToExecuter(RPL_INVITING(executer->getNickname(), channel_name, target_nick) + "\r\n");
 
 	std::string invite_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() + " INVITE " + target_nick + " " + channel_name + "\r\n";
 	target_client->pushToSendQueue(invite_msg);

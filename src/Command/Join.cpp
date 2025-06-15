@@ -43,7 +43,7 @@ void Join::executeCmd() {
 
 	for(std::vector<std::pair<std::string, std::string> >::iterator it = param_channels.begin(); it != param_channels.end(); ++it) {
 		if (!isValidChannelName(it->first)) {
-			sendToExecuter("403 " + executer->getNickname() + " " + it->first + " :No such channel\r\n");
+			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), it->first) + "\r\n");
 			continue;
 		}
 		
@@ -72,13 +72,13 @@ void Join::executeCmd() {
 		else {
 			if (channel->hasMode(MODE_INVITE)) {
 				if (!channel->isInvited(executer->getNickname())) {
-					sendToExecuter("473 " + executer->getNickname() + " " + it->first + " :Cannot join channel (+i)\r\n");
+					sendToExecuter(ERR_INVITEONLYCHAN(executer->getNickname(), it->first) + "\r\n");
 					continue;
 				}
 			}
 			if (channel->hasMode(MODE_KEY)) {
 				if (!channel->verifyPassword(it->second)) {
-					sendToExecuter("475 " + executer->getNickname() + " " + it->first + " :Cannot join channel (+k)\r\n");
+					sendToExecuter(ERR_BADCHANNELKEY(executer->getNickname(), it->first) + "\r\n");
 					continue;
 				}
 			}

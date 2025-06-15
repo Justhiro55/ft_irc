@@ -25,34 +25,34 @@ void Kick::executeCmd() {
 	}
 
 	if (channel_name.empty() || channel_name[0] != '#') {
-		sendToExecuter("476 " + executer->getNickname() + " " + channel_name + " :Bad Channel Mask\r\n");
+		sendToExecuter(ERR_BADCHANMASK(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
 	Channel* channel = serverData->getChannelByName(channel_name);
 	if (!channel) {
-		sendToExecuter("403 " + executer->getNickname() + " " + channel_name + " :No such channel\r\n");
+		sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
 	if (!channel->getMemberByNick(executer->getNickname())) {
-		sendToExecuter("442 " + executer->getNickname() + " " + channel_name + " :You're not on that channel\r\n");
+		sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
 	Client* target_client = serverData->getClientByNickname(target_nick);
 	if (!target_client) {
-		sendToExecuter("401 " + executer->getNickname() + " " + target_nick + " :No such nick/channel\r\n");
+		sendToExecuter(ERR_NOSUCHNICK(executer->getNickname(), target_nick) + "\r\n");
 		return;
 	}
 
 	if (!channel->getMemberByNick(target_nick)) {
-		sendToExecuter("441 " + executer->getNickname() + " " + target_nick + " " + channel_name + " :They aren't on that channel\r\n");
+		sendToExecuter(ERR_USERNOTINCHANNEL(executer->getNickname(), target_nick, channel_name) + "\r\n");
 		return;
 	}
 
 	if (!channel->isOperator(executer)) {
-		sendToExecuter("482 " + executer->getNickname() + " " + channel_name + " :You're not channel operator\r\n");
+		sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 		return;
 	}
 
