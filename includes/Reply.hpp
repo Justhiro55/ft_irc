@@ -19,6 +19,7 @@
 // JOIN
 #define ERR_INVITEONLYCHAN(nick, channel) "473 " + nick + " " + channel + " :Cannot join channel (+i)"
 #define ERR_BADCHANNELKEY(nick, channel) "475 " + nick + " " + channel + " :Cannot join channel (+k)"
+#define ERR_CHANNELISFULL(channel) "471 " + channel + ":Cannot join channel (+l)"
 
 // INVITE
 #define ERR_USERONCHANNEL(nick, target, channel) "443 " + nick + " " + target + " " + channel + " :is already on channel"

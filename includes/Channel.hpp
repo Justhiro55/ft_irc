@@ -30,6 +30,7 @@ class Channel {
 		std::string getName();
 
 		Client* getMemberByNick(const std::string &nick) const;
+		size_t countMembers() const ;
 
 		unsigned char getMemberMode(const std::string &nick) const;
 		void setMemberMode(const std::string &nick, unsigned char mode);
@@ -51,6 +52,7 @@ class Channel {
 		bool isInvited(const std::string &nickname) const;
 
 		void setLimit(size_t limit);
+		bool isLimitReached() const ;
 
 		void setMode(unsigned short mode);
 		void unsetMode(unsigned short mode);

@@ -82,6 +82,12 @@ void Join::executeCmd() {
 					continue;
 				}
 			}
+			if (channel->hasMode(MODE_LIMIT)) {
+				if (channel->isLimitReached()) {
+					sendToExecuter(ERR_CHANNELISFULL(it->first) + "\r\n");
+					continue;
+				}
+			}
 			channel->setVoice(executer);
 		}
 		

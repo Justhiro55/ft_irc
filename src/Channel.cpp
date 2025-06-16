@@ -49,6 +49,10 @@ void Channel::setLimit(size_t limit) {
 	this->members_limit = limit;
 }
 
+bool Channel::isLimitReached() const {
+	return this->members_limit <= countMembers();
+}
+
 void Channel::setOperator(Client *member) {
 	members.insert(std::make_pair(member, 'o'));
 }
@@ -93,6 +97,10 @@ Client* Channel::getMemberByNick(const std::string &nick) const {
 			return it->first;
 	}
 	return NULL;
+}
+
+size_t Channel::countMembers() const  {
+	return this->members.size();
 }
 
 bool Channel::isOperator(Client *member) const {
