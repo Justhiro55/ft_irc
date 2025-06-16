@@ -12,16 +12,16 @@ void Topic::executeCmd() {
 	size_t params_size = params.size();
 
 	if (params_size < 1)
-		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Privmsg") + "\r\n");
+		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
 	if (params_size == 1 && message.trailing)
-		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Privmsg") + "\r\n");
+		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
 	
 	if ( params.front()[0] == '#' || params.front()[0] == '&' ) {
         Channel* channel;
 		std::string channel_name = params.front();
 
 		if ( channel_name.size() <= 1 )
-            return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "MODE") + "\r\n");
+            return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
 			
         channel = serverData->getChannelByName(channel_name);
 		if (channel == NULL)
@@ -49,5 +49,5 @@ void Topic::executeCmd() {
 		return channel->sendToMembers(MSG_TOPIC(executer->getNickname(), executer->getHost(), executer->getHost(),
 			channel_name,  params[1]), "");
 	}
-	return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "MODE") + "\r\n");
+	return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
 }

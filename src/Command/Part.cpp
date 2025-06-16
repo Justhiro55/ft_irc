@@ -12,7 +12,7 @@ void Part::executeCmd() {
 	size_t params_size = params.size();
 
 	if (params_size < 1)
-		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Privmsg") + "\r\n");
+		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Part") + "\r\n");
 	
 	std::stringstream ss(params.front());
 	std::string target;
