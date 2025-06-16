@@ -447,7 +447,7 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Kick();
     } else if (command == "MODE") {
         return new Mode();
-    } else if (command == "Oper") {
+    } else if (command == "OPER") {
         return new Oper();
     } else if (command == "TOPIC") {
         return new Topic();
@@ -455,7 +455,7 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Privmsg();
     } else if (command == "NOTICE") {
         return new Notice();
-    } else if (command == "Part") {
+    } else if (command == "PART") {
         return new Part();
     }
     return NULL;

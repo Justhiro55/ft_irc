@@ -38,7 +38,7 @@ void Topic::executeCmd() {
 				return sendToExecuter(RPL_TOPIC(channel_name, channel_topic) + "\r\n");
 		}
 
-		if (channel->hasMode(MODE_TOPICLOCK) && channel->isOperatorMember(executer->getNickname()))
+		if (channel->hasMode(MODE_TOPICLOCK) && !channel->isOperatorMember(executer->getNickname()))
 			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 
 		if (message.trailing && params[1].empty() && params_size == 2)

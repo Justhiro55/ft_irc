@@ -26,7 +26,6 @@ void Privmsg::executeCmd() {
 		targets.push_back(target);
 	}
 
-	removeDuplicates(targets);
 	if (targets.size() > 5) {
 		std::vector<std::string>::iterator overTarget = targets.begin() + 5;
 		sendToExecuter(ERR_TOOMANYTARGETS(executer->getNickname(), *overTarget) + "\r\n");
@@ -34,7 +33,7 @@ void Privmsg::executeCmd() {
 	}
 
 	for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it) {
-		std::string target;
+		std::string target = *it;
 		if ( target[0] == '#' || target[0] == '&' ) {
 			Channel *channel = serverData->getChannelByName(target);
 			if (channel == NULL) {

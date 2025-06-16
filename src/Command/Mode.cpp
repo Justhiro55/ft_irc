@@ -29,7 +29,7 @@ void Mode::executeCmd() {
 		if (params_size == 1)
 			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getMode(channel)) + "\r\n");
 
-		if (channel->isOperatorMember(executer->getNickname()))
+		if (!channel->isOperatorMember(executer->getNickname()))
 			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 
 		std::string applied_modes = setModes(channel);
