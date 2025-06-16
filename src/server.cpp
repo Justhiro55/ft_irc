@@ -445,6 +445,18 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Invite();
     } else if (command == "KICK") {
         return new Kick();
+    } else if (command == "MODE") {
+        return new Mode();
+    } else if (command == "Oper") {
+        return new Oper();
+    } else if (command == "TOPIC") {
+        return new Topic();
+    } else if (command == "PRIVMSG") {
+        return new Privmsg();
+    } else if (command == "NOTICE") {
+        return new Notice();
+    } else if (command == "Part") {
+        return new Part();
     }
     return NULL;
 }
