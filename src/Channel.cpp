@@ -88,3 +88,15 @@ void Channel::unsetMode(unsigned short mode) {
 bool Channel::hasMode(unsigned short mode) {
 	return this->modes & mode;
 }
+
+std::vector<Client*> Channel::getClients() const {
+	std::vector<Client*> clients;
+	for (std::map<Client*, unsigned char>::const_iterator it = members.begin(); it != members.end(); ++it) {
+		clients.push_back(it->first);
+	}
+	return clients;
+}
+
+void Channel::removeClient(Client *client) {
+	members.erase(client);
+}

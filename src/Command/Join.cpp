@@ -64,6 +64,7 @@ void Join::executeCmd() {
 				new_channel->setOperator(executer);
 				serverData->setChannel(new_channel);
 				channel = new_channel;
+				executer->addChannel(channel);
 			} catch (std::bad_alloc& e) {
 				std::cerr << "Memory allocation failed: " << e.what() << std::endl;
 				continue;
@@ -83,6 +84,7 @@ void Join::executeCmd() {
 				}
 			}
 			channel->setVoice(executer);
+			executer->addChannel(channel);
 		}
 		
 		// Send JOIN confirmation to the user

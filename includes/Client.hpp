@@ -22,6 +22,7 @@ class Client {
 		bool	auth;
 		bool	isRegister;
 		bool	welcomeSent;
+		bool	disconnected;
 		std::string nickname;
 		std::string host;
 		std::string username;
@@ -78,4 +79,11 @@ class Client {
 
 		std::queue<std::string>& getSendQueue() { return sendQueue; }
 		std::queue<Message>& getRecvQueue() { return recvQueue; }
+
+		void setDisconnected(bool disconnected);
+		bool isDisconnected() const;
+		void clearChannels();
+		void addChannel(Channel* channel);
+		std::vector<Channel*>& getChannels();
+		const std::string& getHostname() const;
 };
