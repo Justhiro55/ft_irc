@@ -18,9 +18,6 @@ void Mode::executeCmd() {
         Channel* channel;
 		std::string channel_name = params.front();
 
-		if ( channel_name.size() <= 1 )
-            return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "MODE") + "\r\n");
-
         channel = serverData->getChannelByName(channel_name);
 		if (channel == NULL)
 			return sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
@@ -105,12 +102,12 @@ std::string Mode::setModes(Channel *target) {
 				target->setMode(MODE_KEY);
 				target->setPassword(*mode_params_it);
 				++ mode_params_it;
-				applied_modes.append("k");
 			}
 			else{
 				target->unsetMode(MODE_KEY);
 				target->unsetPassword();
 			}
+			applied_modes.append("k");
 		}
 		else if (message.params[1][i] == 'l') {
 			if (plus_flag) {
@@ -126,10 +123,9 @@ std::string Mode::setModes(Channel *target) {
 				target->setMode(MODE_LIMIT);
 				target->setLimit(limit); // validater追加
 				++ mode_params_it;
-				applied_modes.append("l");
 			}
 			else
-				target->unsetMode(MODE_TOPICLOCK);
+				target->unsetMode(MODE_LIMIT);
 
 			applied_modes.append("l");
 		}
