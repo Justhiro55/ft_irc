@@ -6,6 +6,11 @@
 #include <iostream>
 #include <queue>
 #include <sys/socket.h>
+#include <string>
+#include <cctype>
+#include <sstream>
+#include <utility>
+#include "map"
 
 #define USER_MODE_OPERATOR	(1 << 0)   // 0001   +o (オペレーター権限付与)
 

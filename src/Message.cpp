@@ -16,7 +16,6 @@ void dupServer::parsing(std::string &request) {
 		}
 	}
 
-	
 }
 
 
@@ -30,6 +29,14 @@ Message& Message::operator=(const Message& obj) {
 	return *this;
 }
 
+static void trimCRLF(std::string& str) {
+	if (str.size() >= 2 && str[str.size() - 2] == '\r' && str[str.size() - 1] == '\n') {
+		str.erase(str.size() - 2);
+	} else if (!str.empty() && str[str.size() - 1] == '\n') {
+		str.erase(str.size() - 1);
+	}
+}
+
 Message tokenizeMessage(std::string &request) {
 	Message message;
 	std::istringstream ss(request);
@@ -41,32 +48,39 @@ Message tokenizeMessage(std::string &request) {
 		if (token.empty()) continue;
 
 		if (token_count == 0  && token[0] == ':') {
+			trimCRLF(token);
 			message.prefix = token;
 			// isPrefix = true;
 			token_count ++;
 			continue ;
 		}
+		trimCRLF(token);
 		message.command = token;
 		token_count ++;
 		break;
 	}
 	//一応一旦分けました、、
 	while (std::getline(ss, token, ' ')) {
-		if (token.empty())
-			continue;
+    
+		if (token.empty()) continue;
 
 		if (token[0] == ':') {
-			std::string trailing = token;
-			trailing.erase(0, 1);
+			std::string trailing = token.substr(1);
+
+			std::string rest;
 			while (std::getline(ss, token, ' ')) {
 				trailing += " " + token;
 			}
-			if (trailing.empty())
-				break;
+
+			if (!trailing.empty()) {
+				trimCRLF(trailing);
+			}
+
 			message.params.push_back(trailing);
-			message.trailing = true;
 			break;
 		} else {
+			trimCRLF(token);
+      
 			message.params.push_back(token);
 		}
 	}

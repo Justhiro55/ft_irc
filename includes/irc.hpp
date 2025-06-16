@@ -33,6 +33,7 @@ class dupServer {
 #define BUFFER_SIZE 1024
 #define MESSAGE_MAX_LEN 512
 #define MAX_CLIENTS 128
+#define POLL_TIMEOUT 1000 // 1s
 
 class AbstractCommand;
 
@@ -68,8 +69,12 @@ private:
     void parse_messages(int client_fd);
     void process_commands(int client_fd);
     void send_to_client(int client_fd, const std::string& message);
-    void die_with_error(const char* msg, int fd);
     AbstractCommand* createCommand(const std::string& command);
+
+    // Helper functions
+    Client* findClient(int client_fd);
+    size_t findLineEnd(const std::string& buffer);
+    void die_with_error(const char* msg, int fd);
 };
 
 #endif
