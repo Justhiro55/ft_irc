@@ -4,6 +4,9 @@
 #include "Channel.hpp"
 #include "vector"
 
+#define OPER_NAME     "admin"
+#define OPER_PASSWORD "secretpass"
+
 class ServerData {
 	private:
 		std::vector<Client *> clients;

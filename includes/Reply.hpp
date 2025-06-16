@@ -17,6 +17,9 @@
 #define ERR_UNAVAILRESOURCE(nick, resource) "437 " + nick + " " + resource + " :Nick/channel is temporarily unavailable"
 #define ERR_RESTRICTED(executer) "484 " + executer + " :Your connection is restricted!"
 
+// Oper
+#define RPL_YOUREOPER   std::string ("381 :You are now an IRC operator")
+
 //MODE channle
 #define ERR_UNKNOWNMODE(mode, channel) std::string("472 ") + mode + " :is unknown mode char to me for " + channel
 #define ERR_KEYSET(channel) "467 " +  channel + " :Channel key already set"

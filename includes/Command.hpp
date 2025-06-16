@@ -33,6 +33,14 @@ class User : public AbstractCommand {
 		void executeCmd();
 };
 
+class Oper :public AbstractCommand {
+	public:
+		Oper();
+		~Oper();
+
+		void executeCmd();
+};
+
 class Join : public AbstractCommand {
 	public:
 		Join();
@@ -87,3 +95,4 @@ class Part : public AbstractCommand {
 
 		void executeCmd();
 };
+
