@@ -38,7 +38,7 @@ void Privmsg::executeCmd() {
 		if ( target[0] == '#' || target[0] == '&' ) {
 			Channel *channel = serverData->getChannelByName(target);
 			if (channel == NULL) {
-				sendToExecuter(ERR_NOSUCHCHANNEL(target + "\r\n"));
+				sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), target) + "\r\n");
 				continue;
 			}
 			if (!channel->isMember(executer->getNickname())) {
@@ -50,7 +50,7 @@ void Privmsg::executeCmd() {
 		} else {
 			Client *client = serverData->getClientByNickname(target);
 			if (client == NULL)
-				return sendToExecuter(ERR_NOSUCHNICK(target + "\r\n"));
+				return sendToExecuter(ERR_NOSUCHNICK(target) + "\r\n");
 			sendToClient(client, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(),
 				executer->getHost(), target, text));
 		}

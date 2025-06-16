@@ -26,11 +26,11 @@ void Part::executeCmd() {
 		if ( target[0] == '#' || target[0] == '&' ) {
 			Channel *channel = serverData->getChannelByName(target);
 			if (channel == NULL) {
-				sendToExecuter(ERR_NOSUCHCHANNEL(target + "\r\n"));
+				sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), target) + "\r\n");
 				continue;
 			}
 			if (!channel->isMember(executer->getNickname())) {
-				sendToExecuter(ERR_NOTONCHANNEL(target) + "\r\n");
+				sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), target) + "\r\n");
 				continue;
 			}
 			channel->unsetMember(executer);
@@ -42,6 +42,6 @@ void Part::executeCmd() {
 					target, params[1]), "");
 		}
 		else
-			sendToExecuter(ERR_NOSUCHCHANNEL(target + "\r\n"));
+			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), target) + "\r\n");
 	}
 }

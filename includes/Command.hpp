@@ -55,13 +55,15 @@ class Mode : public AbstractCommand {
 		std::string getMode(Client* client);
 		std::string getMode(Channel* channel);
 };
-
 int atoi_checked(std::string literal);
 
 class Topic : public AbstractCommand {
 	public:
 		Topic();
 		~Topic();
+
+		void executeCmd();
+};
 
 class Invite : public AbstractCommand {
 	public:

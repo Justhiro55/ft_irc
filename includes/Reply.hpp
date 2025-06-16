@@ -25,7 +25,6 @@
 #define RPL_INVITING(nick, channel, target) "341 " + nick + " " + channel + " " + target
 
 // KICK
-#define ERR_USERNOTINCHANNEL(nick, target, channel) "441 " + nick + " " + target + " " + channel + " :They aren't on that channel"
 #define ERR_BADCHANMASK(nick, channel) "476 " + nick + " " + channel + " :Bad Channel Mask"
 
 // Oper
@@ -63,7 +62,6 @@
 #define ERR_NORECIPIENT(command) std::string("411 ") + ":No recipient given " + command
 #define ERR_NOTEXTTOSEND   std::string("412 ") + ":No text to send"
 #define ERR_TOOMANYTARGETS(nick, target) std::string("403 ") + nick + " " + target + " :Duplicate recipients. No message delivered"
-#define ERR_CANNOTSENDTOCHAN(nick, channel) std::string("404 ") + nick + " " + channel + " :Cannot send to channel"
 
 #define MSG_PRIVMSG(sender_nick, sender_user, sender_host, channel, message) \
     std::string(":") + sender_nick + sender_user + sender_host + \
@@ -73,7 +71,6 @@
     " NOTICE " + channel + " :" + message + "\r\n"
 
 // Common errors
-#define ERR_NOSUCHNICK(nick, target) "401 " + nick + " " + target + " :No such nick/channel"
 #define ERR_NOSUCHCHANNEL(nick, channel) "403 " + nick + " " + channel + " :No such channel"
 #define ERR_CANNOTSENDTOCHAN(nick, channel) "404 " + nick + " " + channel + " :Cannot send to channel"
 #define ERR_NOTONCHANNEL(nick, channel) "442 " + nick + " " + channel + " :You're not on that channel"
@@ -81,10 +78,7 @@
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"
 #define ERR_NOTREGISTERED(nick) "451 " + nick + " :You have not registered"
-#define ERR_NOSUCHCHANNEL(channel) "403 " + channel + " :No such channel"
 #define ERR_NOSUCHNICK(nick) "401 " + nick + " :No such nick/channel"
-#define ERR_NOTONCHANNEL(channel) "442 " + channel + " :You're not on that channel"
 #define ERR_USERNOTINCHANNEL(nick, channel) "441 " + nick + " " + channel + " :They aren't on that channel"
-#define ERR_CHANOPRIVSNEEDED(channel) "482 " + channel + " :You're not channel operator"
 #define ERR_CHANOPRIVSNEEDED(nick, channel) "482 " + nick + " " + channel + " :You're not channel operator"
 #define ERR_RESTRICTED(executer) "484 " + executer + " :Your connection is restricted!"

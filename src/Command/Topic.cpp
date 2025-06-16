@@ -25,10 +25,10 @@ void Topic::executeCmd() {
 			
         channel = serverData->getChannelByName(channel_name);
 		if (channel == NULL)
-			return sendToExecuter(ERR_NOSUCHCHANNEL(channel_name) + "\r\n");
+			return sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 
 		if (!channel->isMember(executer->getNickname()))
-			return sendToExecuter(ERR_NOTONCHANNEL(channel->getName()) + "\r\n");
+			return sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 
 		if (params_size == 1) {
 			std::string channel_topic = channel->getTopic();
@@ -39,10 +39,7 @@ void Topic::executeCmd() {
 		}
 
 		if (channel->hasMode(MODE_TOPICLOCK) && channel->isOperatorMember(executer->getNickname()))
-			return sendToExecuter(ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
-
-		if (channel->isOperatorMember(executer->getNickname()))
-			return sendToExecuter(ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
+			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 
 		if (message.trailing && params[1].empty() && params_size == 2)
 			channel->clearTopic();

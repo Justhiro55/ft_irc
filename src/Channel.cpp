@@ -27,10 +27,6 @@ bool Channel::isPasswordSet() const {
 	return true;
 }
 
-void Channel::setPassword(std::string password) {
-	this->password = password;
-}
-
 bool Channel::verifyPassword(const std::string &password) const {
 	return this->password == password;
 }

@@ -23,14 +23,14 @@ void Mode::executeCmd() {
 
         channel = serverData->getChannelByName(channel_name);
 		if (channel == NULL)
-			return sendToExecuter(ERR_NOSUCHCHANNEL(channel_name) + "\r\n");
+			return sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		if (!channel->isMember(executer->getNickname()))
-			return sendToExecuter(ERR_NOTONCHANNEL(channel->getName()) + "\r\n");
+			return sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), channel->getName()) + "\r\n");
 		if (params_size == 1)
 			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getMode(channel)) + "\r\n");
 
 		if (channel->isOperatorMember(executer->getNickname()))
-			return sendToExecuter(ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
+			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 
 		std::string applied_modes = setModes(channel);
 		if (applied_modes.empty() || applied_modes.size() == 1)
