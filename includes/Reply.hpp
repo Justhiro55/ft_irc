@@ -29,23 +29,23 @@
 #define ERR_BADCHANMASK(nick, channel) "476 " + nick + " " + channel + " :Bad Channel Mask"
 
 // Oper
-#define RPL_YOUREOPER   std::string ("381 :You are now an IRC operator")
+#define RPL_YOUREOPER(nick)   std::string ("381 ") + nick + ":You are now an IRC operator"
 
 //MODE channle
 #define ERR_UNKNOWNMODE(mode, channel) std::string("472 ") + mode + " :is unknown mode char to me for " + channel
 #define ERR_KEYSET(channel) "467 " +  channel + " :Channel key already set"
-#define RPL_CHANNELMODEIS(nick, channel, modes) "324 " + nick + " " + channel + " " + modes
-#define RPL_CHANNELMODECHANGE(nick, user, host, channel, mode_changes) nick + "!" + user + "@" + host + " MODE " + channel + " :" + mode_changes
+#define RPL_CHANNELMODEIS(nick, channel, modes) "324 " + nick + " " + channel + " :" + modes
+#define RPL_CHANNELMODECHANGE(nick, user, host, channel, mode_changes) ":" + nick + "!" + user + "@" + host + " MODE " + channel + " :" + mode_changes
 
 //MODE user
 #define ERR_USERSDONTMATCH(client) "502 " + client + " :Cannot change mode for other users"
-#define ERR_UMODEUNKNOWNFLAG std::string("501 ") + "Unknown MODE flag"
+#define ERR_UMODEUNKNOWNFLAG(nick) std::string("501 ") + nick + " :Unknown MODE flag"
 #define	RPL_UMODEIS(nick, modes) "221 " + nick + " :" + modes  
 #define	PRL_UMODECHANGE(nick, modes) "MODE " + nick + " :" + modes 
 
 // Topic
 #define RPL_NOTOPIC(channel)  "331 " + channel + ":No topic is set"
-#define RPL_TOPIC(channel, topic)  "332 " + channel + " :" + topic
+#define RPL_TOPIC(nick, channel, topic)  "332 " + nick + " "+ channel + " :" + topic
 #define ERR_NOCHANMODES(channel)  "447 " +  channel + ":Channel doesn't support modes"
 
 #define MSG_TOPIC(nick, user, host, channel, topic) \
@@ -61,7 +61,7 @@
 
 // Privmsg/NOTICE
 #define ERR_NORECIPIENT(command) std::string("411 ") + ":No recipient given " + command
-#define ERR_NOTEXTTOSEND   std::string("412 ") + ":No text to send"
+#define ERR_NOTEXTTOSEND(nick)   std::string("412 ") + nick + " :No text to send"
 #define ERR_TOOMANYTARGETS(nick, target) std::string("403 ") + nick + " " + target + " :Duplicate recipients. No message delivered"
 
 #define MSG_PRIVMSG(sender_nick, sender_user, sender_host, channel, message) \

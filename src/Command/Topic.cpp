@@ -35,7 +35,7 @@ void Topic::executeCmd() {
 			if (channel_topic.empty())
 				return sendToExecuter(RPL_NOTOPIC(channel_name) + "\r\n");
 			else
-				return sendToExecuter(RPL_TOPIC(channel_name, channel_topic) + "\r\n");
+				return sendToExecuter(RPL_TOPIC(executer->getNickname(), channel_name, channel_topic) + "\r\n");
 		}
 
 		if (channel->hasMode(MODE_TOPICLOCK) && !channel->isOperatorMember(executer->getNickname()))

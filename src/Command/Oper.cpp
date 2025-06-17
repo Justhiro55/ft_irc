@@ -17,8 +17,8 @@ void Oper::executeCmd() {
 	if (params[0] != OPER_NAME || params[1] != OPER_PASSWORD)
 		return sendToExecuter(ERR_PASSWDMISMATCH(executer->getNickname()));
 	if (executer->hasMode(USER_MODE_OPERATOR))
-		return sendToExecuter(RPL_YOUREOPER + "\r\n");
+		return sendToExecuter(RPL_YOUREOPER(executer->getNickname()) + "\r\n");
 	executer->setMode(USER_MODE_OPERATOR);
-	sendToExecuter(RPL_YOUREOPER + "\r\n");
+	sendToExecuter(RPL_YOUREOPER(executer->getNickname()) + "\r\n");
 	sendToExecuter(PRL_UMODECHANGE(executer->getNickname(), "+o") + "\r\n");
 }

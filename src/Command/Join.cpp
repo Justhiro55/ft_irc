@@ -46,6 +46,12 @@ void Join::executeCmd() {
 			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), it->first) + "\r\n");
 			continue;
 		}
+
+		if (it->first.size() <= 1) {
+			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), it->first) + "\r\n");
+			continue;
+		}
+
 		
 		Channel * channel = serverData->getChannelByName(it->first);
 		

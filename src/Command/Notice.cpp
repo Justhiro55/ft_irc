@@ -16,7 +16,7 @@ void Notice::executeCmd() {
 	if (params_size == 1 && message.trailing)
 		return sendToExecuter(ERR_NORECIPIENT(message.command) + "\r\n");
 	else if (params_size == 1 && !message.trailing)
-		return sendToExecuter(ERR_NOTEXTTOSEND + "\r\n");
+		return sendToExecuter(ERR_NOTEXTTOSEND(executer->getNickname()) + "\r\n");
 	
 	std::string text = params[1];
 	std::stringstream ss(params.front());

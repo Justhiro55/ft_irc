@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), nickname(""), host(""), username(""), server("") {}
+Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), nickname(""), host(""), username(""), server(""), modes(0) {}
 
 Client::~Client() {}
 
@@ -63,9 +63,7 @@ void Client::unsetMode(unsigned short mode) {
 }
 
 bool Client::hasMode(unsigned short mode) {
-	if (mode == USER_MODE_OPERATOR)
-		return true;
-	return false;
+	return this->modes & mode;
 }
 
 int Client::getClientFd() {
@@ -135,22 +133,6 @@ void Client::pushToSendQueue(std::string reply) {
 
 void Client::pushMessageToRecvQueue(const Message& message) {
     this->recvQueue.push(message);
-}
-
-ssize_t Client::pushToRecvQueue() {
-	char buffer[1024];
-	ssize_t bytes_received = recv(this->fd, buffer, sizeof(buffer) - 1, 0);
-	if (bytes_received <= 0)
-		return bytes_received;
-	
-	this->receiveBuffer.append(buffer);
-	std::queue<std::string> messages = splitStream(receiveBuffer, "\r\n");
-	while (messages.size()) {
-		this->recvQueue.push(tokenizeMessage(messages.front()));
-		messages.pop();
-	}
-
-	return bytes_received;
 }
 
 std::queue<std::string> Client::splitStream(std::string& val, const std::string& delim) {

@@ -25,9 +25,12 @@ void Mode::executeCmd()
 			return sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), channel_name) + "\r\n");
 		if (!channel->isMember(executer->getNickname()))
 			return sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), channel->getName()) + "\r\n");
-		if (params_size == 1)
-			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getMode(channel)) + "\r\n");
-
+		if (params_size == 1) {
+			std::string getModes = getMode(channel);
+			if (getModes.size() <= 1)
+				getModes.clear();
+			return sendToExecuter(RPL_CHANNELMODEIS(executer->getNickname(), channel_name, getModes) + "\r\n");
+		}
 		if (!channel->isOperatorMember(executer->getNickname()))
 			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
 
@@ -65,12 +68,14 @@ std::string Mode::setModes(Channel *target)
 	bool plus_flag;
 	std::string applied_modes;
 
-	if (message.params[1][0] == '+')
+	if (message.params[1][0] == '+' && message.params[1].size() > 1)
 		plus_flag = true;
-	else if (message.params[1][0] == '-')
+	else if (message.params[1][0] == '-' && message.params[1].size() > 1)
 		plus_flag = false;
-	else
-		return NULL;
+	else {
+		sendToExecuter(ERR_UNKNOWNMODE(message.params[1], target->getName()) + "\r\n");
+		return "";
+	}
 	applied_modes.append(1, message.params[1][0]);
 	message.params[1].erase(0, 1); // これよくないね
 
@@ -182,12 +187,15 @@ std::string Mode::setModes(Client *target)
 	bool plus_flag;
 	std::string applied_modes;
 
-	if (message.params[1][0] == '+')
+	if (message.params[1][0] == '+' && message.params[1].size() > 1)
 		plus_flag = true;
-	else if (message.params[1][0] == '-')
+	else if (message.params[1][0] == '-' && message.params[1].size() > 1)
 		plus_flag = false;
-	else
-		return NULL;
+	else {
+		sendToExecuter(ERR_UNKNOWNMODE(message.params[1], target->getNickname()) + "\r\n");
+		return "";
+	}
+
 	applied_modes.append(1, message.params[1][0]);
 	message.params[1].erase(0, 1);
 
@@ -198,19 +206,17 @@ std::string Mode::setModes(Client *target)
 	{
 		if (message.params[1][i] == 'o')
 		{
+			if (plus_flag) {
+				sendToExecuter(ERR_UMODEUNKNOWNFLAG(executer->getNickname()) + "\r\n");
+				return applied_modes;
+			}
 			if (!target->hasMode(USER_MODE_OPERATOR))
 			{
 				return applied_modes;
 			}
-			if (plus_flag)
-			{
-				if (mode_params_it == message.params.end())
-				{
-					sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
-					return applied_modes;
-				}
-				target->setMode(USER_MODE_OPERATOR);
-				applied_modes.append("o");
+			if (plus_flag) {
+				sendToExecuter(ERR_UMODEUNKNOWNFLAG(executer->getNickname()) + "\r\n");
+				return applied_modes;
 			}
 			else
 				target->unsetMode(USER_MODE_OPERATOR);
@@ -218,7 +224,7 @@ std::string Mode::setModes(Client *target)
 		}
 		else
 		{
-			sendToExecuter(ERR_UMODEUNKNOWNFLAG + "\r\n");
+			sendToExecuter(ERR_UMODEUNKNOWNFLAG(executer->getNickname()) + "\r\n");
 			return applied_modes;
 		}
 	}
