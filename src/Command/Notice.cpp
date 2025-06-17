@@ -26,7 +26,6 @@ void Notice::executeCmd() {
 		targets.push_back(target);
 	}
 
-	removeDuplicates(targets);
 	if (targets.size() > 5) {
 		std::vector<std::string>::iterator overTarget = targets.begin() + 5;
 		sendToExecuter(ERR_TOOMANYTARGETS(executer->getNickname(), *overTarget) + "\r\n");
@@ -34,7 +33,7 @@ void Notice::executeCmd() {
 	}
 
 	for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it) {
-		std::string target;
+		std::string target = *it;
 		if ( target[0] == '#' || target[0] == '&' ) {
 			Channel *channel = serverData->getChannelByName(target);
 			if (channel == NULL) {
@@ -45,8 +44,13 @@ void Notice::executeCmd() {
 				sendToExecuter(ERR_CANNOTSENDTOCHAN(executer->getNickname(), channel->getName()) + "\r\n");
 				continue;
 			}
-			channel->sendToMembers(MSG_NOTICE(executer->getNickname(), executer->getUsername(), executer->getHost(),
-				target, text), executer->getNickname());
+
+			std::vector<Client *> sendingClients = channel->getClients();
+			std::vector<Client*>::iterator it = std::find(sendingClients.begin(), sendingClients.end(), executer);
+			if (it != sendingClients.end())
+				sendingClients.erase(it);
+			sendToClients(sendingClients, MSG_NOTICE(executer->getNickname(), executer->getUsername(), executer->getHost(),
+				target, text));
 		} else {
 			Client *client = serverData->getClientByNickname(target);
 			if (client == NULL)

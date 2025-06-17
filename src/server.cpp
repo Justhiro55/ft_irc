@@ -4,7 +4,7 @@
 // Constructor
 IRCServer::IRCServer(int server_port, const std::string& server_password)
     : server_fd(-1), port(server_port), password(server_password) {
-    serverData = new ServerData();
+    serverData = new ServerData(this->poll_fds);
     serverData->setPassword(server_password);
     setup_server();
 }

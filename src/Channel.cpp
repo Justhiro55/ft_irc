@@ -160,3 +160,11 @@ void Channel::setTopic(std::string topic) {
 void Channel::clearTopic() {
 	this->topic.clear();
 }
+
+std::vector<Client*> Channel::getClients() const {
+	std::vector<Client*> clients;
+	for (std::map<Client*, unsigned char>::const_iterator it = members.begin(); it != members.end(); ++it) {
+		clients.push_back(it->first);
+	}
+	return clients;
+}

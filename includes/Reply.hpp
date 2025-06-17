@@ -65,10 +65,10 @@
 #define ERR_TOOMANYTARGETS(nick, target) std::string("403 ") + nick + " " + target + " :Duplicate recipients. No message delivered"
 
 #define MSG_PRIVMSG(sender_nick, sender_user, sender_host, channel, message) \
-    std::string(":") + sender_nick + sender_user + sender_host + \
+    std::string(":") + sender_nick + "!" + sender_user + "@" + sender_host + \
     " PRIVMSG " + channel + " :" + message + "\r\n"
 #define MSG_NOTICE(sender_nick, sender_user, sender_host, channel, message) \
-    std::string(":") + sender_nick + sender_user + sender_host + \
+    std::string(":") + sender_nick + "!" + sender_user  + "@" + sender_host + \
     " NOTICE " + channel + " :" + message + "\r\n"
 
 // Common errors
@@ -79,7 +79,7 @@
 #define ERR_NEEDMOREPARAMS(nick, command) "461 " + nick + " " + command + " :Not enough parameters"
 #define ERR_ALREADYREGISTRED(nick) "462 " + nick + " :Unauthorized command (already registered)"
 #define ERR_NOTREGISTERED(nick) "451 " + nick + " :You have not registered"
-#define ERR_NOSUCHNICK(nick) "401 " + nick + " :No such nick/channel"
+#define ERR_NOSUCHNICK(nick) "401 " + nick + " :No such nick"
 #define ERR_USERNOTINCHANNEL(nick, channel) "441 " + nick + " " + channel + " :They aren't on that channel"
 #define ERR_CHANOPRIVSNEEDED(nick, channel) "482 " + nick + " " + channel + " :You're not channel operator"
 #define ERR_RESTRICTED(executer) "484 " + executer + " :Your connection is restricted!"

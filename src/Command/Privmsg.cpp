@@ -51,9 +51,12 @@ void Privmsg::executeCmd()
 				sendToExecuter(ERR_CANNOTSENDTOCHAN(executer->getNickname(), channel->getName()) + "\r\n");
 				continue;
 			}
-			channel->sendToMembers(MSG_PRIVMSG(executer->getNickname(), executer->getUsername(), executer->getHost(),
-											   target, text),
-								   executer->getNickname());
+			std::vector<Client *> sendingClients = channel->getClients();
+			std::vector<Client*>::iterator it = std::find(sendingClients.begin(), sendingClients.end(), executer);
+			if (it != sendingClients.end())
+				sendingClients.erase(it);
+			sendToClients(sendingClients, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(), executer->getHost(),
+											   target, text));
 		}
 		else
 		{

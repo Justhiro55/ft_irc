@@ -63,4 +63,5 @@ class Channel {
 		std::string getTopic() const;
 		void setTopic(std::string topic);
 		void clearTopic();
+		std::vector<Client*> getClients() const;
 };

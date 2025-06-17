@@ -35,11 +35,11 @@ void Part::executeCmd() {
 			}
 			channel->unsetMember(executer);
 			if (params_size == 1)
-				channel->sendToMembers(MSG_PART_DEFAULT(executer->getNickname(), executer->getUsername(), executer->getHost(),
-					target), "");
+				sendToClients(channel->getClients(), MSG_PART_DEFAULT(executer->getNickname(), executer->getUsername(), executer->getHost(),
+					target));
 			else
-				channel->sendToMembers(MSG_PART_REASON(executer->getNickname(), executer->getUsername(), executer->getHost(),
-					target, params[1]), "");
+				sendToClients(channel->getClients(), MSG_PART_REASON(executer->getNickname(), executer->getUsername(), executer->getHost(),
+					target, params[1]));
 		}
 		else
 			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), target) + "\r\n");

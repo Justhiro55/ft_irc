@@ -28,6 +28,6 @@ class AbstractCommand {
 
 		void sendToExecuter(const std::string &reply);
 		void sendToClient(Client *client, const std::string &reply);
-		void sentToClients(std::vector<Client *> clients, const std::string &reply);
+		void sendToClients(std::vector<Client *> clients, const std::string &reply);
 		void sendWelcomeMessages();
 };

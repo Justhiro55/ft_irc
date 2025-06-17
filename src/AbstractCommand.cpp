@@ -37,10 +37,11 @@ void AbstractCommand::sendToExecuter(const std::string &reply) {
 void AbstractCommand::sendToClient(Client *client, const std::string &reply) {
 	if (reply.empty())
 		return ;
+	serverData->enablePollOut(client->getClientFd());
 	client->pushToSendQueue(reply);
 }
 
-void AbstractCommand::sentToClients(std::vector<Client *> clients, const std::string &reply) {
+void AbstractCommand::sendToClients(std::vector<Client *> clients, const std::string &reply) {
 	if (clients.size() <= 0 || reply.empty())
 		return;
 	
