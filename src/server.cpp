@@ -419,13 +419,7 @@ void IRCServer::process_commands(int client_fd) {
             command->setExecuter(client);
             command->executeCmd();
             delete command;
-            
-            // Check if there are messages to send
-            if (!client->getSendQueue().empty()) {
-                std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
-                // Force send immediately
-                handle_client_send(client_fd);
-            }
+
         } else {
             std::cout << "Unknown command: " << message.command << std::endl;
         }
