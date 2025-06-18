@@ -30,6 +30,10 @@ void Invite::executeCmd() {
 	}
 
 	if (channel->hasMode(MODE_INVITE)) {
+		if (!channel->isOperator(executer)) {
+			sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
+			return;
+		}
 	}
 
 	Client* target_client = serverData->getClientByNickname(target_nick);
