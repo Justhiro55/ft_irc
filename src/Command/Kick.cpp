@@ -63,5 +63,6 @@ void Kick::executeCmd() {
 
 	sendToExecuter(kick_msg);
 	target_client->pushToSendQueue(kick_msg);
-	// TODO: Send to channel members
+
+	channel->sendToMembers(kick_msg, executer->getNickname() + " " + target_nick);
 }
