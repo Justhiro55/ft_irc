@@ -159,7 +159,7 @@ std::string Mode::setModes(Channel *target)
 					sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
 					return applied_modes;
 				}
-				if (target->isMember(*mode_params_it))
+				if (!target->isMember(*mode_params_it))
 				{
 					sendToExecuter(ERR_USERNOTINCHANNEL(executer->getNickname(), target->getName()) + "\r\n");
 					return applied_modes;

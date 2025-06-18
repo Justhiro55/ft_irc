@@ -61,8 +61,10 @@ void Privmsg::executeCmd()
 		else
 		{
 			Client *client = serverData->getClientByNickname(target);
-			if (client == NULL)
-				return sendToExecuter(ERR_NOSUCHNICK(target) + "\r\n");
+			if (client == NULL) {
+				sendToExecuter(ERR_NOSUCHNICK(target) + "\r\n");
+				return ;
+			}
 			sendToClient(client, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(),
 											 executer->getHost(), target, text));
 		}
