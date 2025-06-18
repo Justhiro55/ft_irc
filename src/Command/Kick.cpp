@@ -42,12 +42,12 @@ void Kick::executeCmd() {
 
 	Client* target_client = serverData->getClientByNickname(target_nick);
 	if (!target_client) {
-		sendToExecuter(ERR_NOSUCHNICK(executer->getNickname(), target_nick) + "\r\n");
+		sendToExecuter(ERR_NOSUCHNICK(target_nick) + "\r\n");
 		return;
 	}
 
 	if (!channel->getMemberByNick(target_nick)) {
-		sendToExecuter(ERR_USERNOTINCHANNEL(executer->getNickname(), target_nick, channel_name) + "\r\n");
+		sendToExecuter(ERR_USERNOTINCHANNEL(target_nick, channel_name) + "\r\n");
 		return;
 	}
 

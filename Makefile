@@ -17,6 +17,11 @@ SRC = main.cpp \
       Command/Mode.cpp \
       Command/Invite.cpp \
       Command/Kick.cpp \
+	    Command/Topic.cpp \
+	    Command/Part.cpp \
+	    Command/Privmsg.cpp \
+	    Command/Notice.cpp\
+	    Command/Oper.cpp \
       Command/Quit.cpp
 
 OBJ_DIR = obj

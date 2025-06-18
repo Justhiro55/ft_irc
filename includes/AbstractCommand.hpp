@@ -27,7 +27,7 @@ class AbstractCommand {
 		void setExecuter(Client* executer);
 
 		void sendToExecuter(const std::string &reply);
-		void sendToClient(Client *client, std::string &reply);
-		void sentToClients(std::vector<Client *> clients, std::string &reply);
+		void sendToClient(Client *client, const std::string &reply);
+		void sendToClients(std::vector<Client *> clients, const std::string &reply);
 		void sendWelcomeMessages();
 };

@@ -34,7 +34,7 @@ void Invite::executeCmd() {
 
 	Client* target_client = serverData->getClientByNickname(target_nick);
 	if (!target_client) {
-		sendToExecuter(ERR_NOSUCHNICK(executer->getNickname(), target_nick) + "\r\n");
+		sendToExecuter(ERR_NOSUCHNICK(target_nick) + "\r\n");
 		return;
 	}
 

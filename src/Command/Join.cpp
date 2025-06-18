@@ -46,6 +46,12 @@ void Join::executeCmd() {
 			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), it->first) + "\r\n");
 			continue;
 		}
+
+		if (it->first.size() <= 1) {
+			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), it->first) + "\r\n");
+			continue;
+		}
+
 		
 		Channel * channel = serverData->getChannelByName(it->first);
 		
@@ -83,6 +89,12 @@ void Join::executeCmd() {
 					continue;
 				}
 			}
+			if (channel->hasMode(MODE_LIMIT)) {
+				if (channel->isLimitReached()) {
+					sendToExecuter(ERR_CHANNELISFULL(it->first) + "\r\n");
+					continue;
+				}
+			}
 			channel->setVoice(executer);
 			executer->addChannel(channel);
 		}
@@ -110,7 +122,7 @@ bool isValidChannelName(const std::string& channel_name) {
     if (channel_name.empty() || channel_name.length() > 50)
         return false;
 
-    if (channel_name[0] != '#')
+    if (channel_name[0] != '#' && channel_name[0] != '&')
         return false;
 
 

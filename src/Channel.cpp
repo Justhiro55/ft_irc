@@ -13,8 +13,18 @@ std::string Channel::getName() {
 	return this->name;
 }
 
-void Channel::setPassword(std::string password) {
+void Channel::setPassword(std::string &password) {
 	this->password = password;
+}
+
+void Channel::unsetPassword() {
+	this->password.clear();
+}
+
+bool Channel::isPasswordSet() const {
+	if (this->password.empty())
+		return false;
+	return true;
 }
 
 bool Channel::verifyPassword(const std::string &password) const {
@@ -35,12 +45,50 @@ bool Channel::isInvited(const std::string &nickname) const {
 	return std::find(invite_list.begin(), invite_list.end(), nickname) != invite_list.end();
 }
 
+void Channel::setLimit(size_t limit) {
+	this->members_limit = limit;
+}
+
+bool Channel::isLimitReached() const {
+	return this->members_limit <= countMembers();
+}
+
 void Channel::setOperator(Client *member) {
 	members.insert(std::make_pair(member, 'o'));
 }
 
+bool Channel::isMember(const std::string &nick) {
+	Client *member = getMemberByNick(nick);
+	if (member == NULL)
+		return false;
+	return true;
+}
+
+bool Channel::isOperatorMember(const std::string &nick) {
+	unsigned char mode = getMemberMode(nick);
+	if (mode == 'o')
+		return true;
+	return false;
+}
+
 void Channel::setVoice(Client *member) {
 	members.insert(std::make_pair(member, 'v'));
+}
+
+unsigned char Channel::getMemberMode(const std::string &nick) const {
+	for (std::map<Client*, unsigned char>::const_iterator it = members.begin(); it != members.end(); ++it) {
+		if (it->first->getNickname() == nick)
+			return it->second;
+	}
+	return '\0';
+}
+
+void Channel::setMemberMode(const std::string &nick, unsigned char mode) {
+	for (std::map<Client*, unsigned char>::iterator it = members.begin(); it != members.end(); ++it) {
+		if (it->first->getNickname() == nick) {
+			it->second = mode;
+		}
+	}
 }
 
 Client* Channel::getMemberByNick(const std::string &nick) const {
@@ -49,6 +97,10 @@ Client* Channel::getMemberByNick(const std::string &nick) const {
 			return it->first;
 	}
 	return NULL;
+}
+
+size_t Channel::countMembers() const  {
+	return this->members.size();
 }
 
 bool Channel::isOperator(Client *member) const {
@@ -89,6 +141,26 @@ bool Channel::hasMode(unsigned short mode) {
 	return this->modes & mode;
 }
 
+void Channel::sendToMembers(const std::string &reply, const std::string &excluded_nick) {
+	for (std::map<Client*, unsigned char>::iterator it = members.begin(); it != members.end(); ++it) {
+			if (it->first->getNickname() == excluded_nick)
+				continue;
+			it->first->pushToSendQueue(reply);
+	}
+}
+
+std::string Channel::getTopic() const {
+	return this->topic;
+}
+
+void Channel::setTopic(std::string topic) {
+	this->topic = topic;
+}
+
+void Channel::clearTopic() {
+	this->topic.clear();
+}
+
 std::vector<Client*> Channel::getClients() const {
 	std::vector<Client*> clients;
 	for (std::map<Client*, unsigned char>::const_iterator it = members.begin(); it != members.end(); ++it) {
@@ -100,3 +172,4 @@ std::vector<Client*> Channel::getClients() const {
 void Channel::removeClient(Client *client) {
 	members.erase(client);
 }
+

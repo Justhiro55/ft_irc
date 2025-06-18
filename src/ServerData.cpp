@@ -1,8 +1,6 @@
 #include "../includes/ServerData.hpp"
 
-ServerData::ServerData() {
-	// 必要なら初期化
-}
+ServerData::ServerData(std::vector<struct pollfd>& poll_fds) : poll_fds(poll_fds){}
 
 ServerData::~ServerData() {
 	for (std::vector<Channel*>::iterator it =  channels.begin(); it != channels.end(); ++it) {
@@ -55,7 +53,6 @@ Client* ServerData::getClientByNickname(std::string &nick) {
 	return NULL;
 }
 
-
 void ServerData::setChannel(Channel *channel) {
 	if (channel == NULL)
 		return;
@@ -72,4 +69,13 @@ Channel* ServerData::getChannelByName(std::string &name) {
 		}
 	}
 	return NULL;
+}
+
+void ServerData::enablePollOut(int client_fd) {
+    for (size_t i = 0; i < this->poll_fds.size(); ++i) {
+        if (poll_fds[i].fd == client_fd) {
+            poll_fds[i].events |= POLLOUT;
+            break;
+        }
+    }
 }

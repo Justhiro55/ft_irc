@@ -4,7 +4,7 @@
 // Constructor
 IRCServer::IRCServer(int server_port, const std::string& server_password)
     : server_fd(-1), port(server_port), password(server_password) {
-    serverData = new ServerData();
+    serverData = new ServerData(this->poll_fds);
     serverData->setPassword(server_password);
     setup_server();
 }
@@ -439,6 +439,7 @@ void IRCServer::process_commands(int client_fd) {
                 std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
                 handle_client_send(client_fd);
             }
+          
         } else {
             std::cout << "Unknown command: " << message.command << std::endl;
         }
@@ -458,6 +459,18 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Invite();
     } else if (command == "KICK") {
         return new Kick();
+    } else if (command == "MODE") {
+        return new Mode();
+    } else if (command == "OPER") {
+        return new Oper();
+    } else if (command == "TOPIC") {
+        return new Topic();
+    } else if (command == "PRIVMSG") {
+        return new Privmsg();
+    } else if (command == "NOTICE") {
+        return new Notice();
+    } else if (command == "PART") {
+        return new Part();
     } else if (command == "QUIT") {
         return new Quit();
     }
