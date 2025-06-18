@@ -1,8 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), nickname(""), host(""), username(""), server(""), modes(0) {}
-
-Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), disconnected(false), nickname(""), host(""), username(""), server("") {}
+Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), disconnected(false), nickname(""), host(""), username(""), server(""), modes(0) {}
 
 Client::~Client() {}
 

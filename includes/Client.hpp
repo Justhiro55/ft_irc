@@ -14,6 +14,8 @@
 
 #define USER_MODE_OPERATOR	(1 << 0)   // 0001   +o (オペレーター権限付与)
 
+class Channel;
+
 class Client {
 	private:
 		int		fd;
@@ -28,7 +30,7 @@ class Client {
 		std::string username;
 		std::string server;
 		std::string realname;
-
+		std::vector<Channel *> join_channels;
 		unsigned short modes;
 
 		std::string receiveBuffer;
