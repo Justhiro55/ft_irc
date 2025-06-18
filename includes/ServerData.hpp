@@ -30,6 +30,7 @@ class ServerData {
 		Client	*getClientByNickname(std::string &nick);
 
 		Channel	*getChannelByName(std::string &name);
+		void removeChannel(Channel *target);
 
 		void enablePollOut(int client_fd);
 };

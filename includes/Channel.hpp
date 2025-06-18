@@ -37,6 +37,7 @@ class Channel {
 		bool isOperator(Client *member) const;
 		void unsetMember(Client *member);
 		bool isMember(const std::string &nick);
+		size_t members_size();
 
 		void sendToMembers(const std::string &reply, const std::string &excluded_nick);
 
