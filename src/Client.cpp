@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), nickname(""), host(""), username(""), server("") {}
+Client::Client() : fd(-1), ip(""), port(0), auth(false), isRegister(false), welcomeSent(false), disconnected(false), nickname(""), host(""), username(""), server("") {}
 
 Client::~Client() {}
 
@@ -166,4 +166,28 @@ std::queue<std::string> Client::splitStream(std::string& val, const std::string&
         val.erase(0, pos + delim.length());
     }
     return ret;
+}
+
+void Client::setDisconnected(bool disconnected) {
+    this->disconnected = disconnected;
+}
+
+bool Client::isDisconnected() const {
+    return this->disconnected;
+}
+
+void Client::clearChannels() {
+    this->join_channels.clear();
+}
+
+void Client::addChannel(Channel* channel) {
+    this->join_channels.push_back(channel);
+}
+
+std::vector<Channel*>& Client::getChannels() {
+    return this->join_channels;
+}
+
+const std::string& Client::getHostname() const {
+    return this->ip;
 }

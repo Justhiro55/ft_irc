@@ -41,4 +41,6 @@ class Channel {
 		void unsetMode(unsigned short mode);
 		bool hasMode(unsigned short mode);
 		bool verifyPassword(const std::string &password) const;
+		std::vector<Client*> getClients() const;
+		void removeClient(Client *client);
 };

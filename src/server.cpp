@@ -419,11 +419,24 @@ void IRCServer::process_commands(int client_fd) {
             command->setExecuter(client);
             command->executeCmd();
             delete command;
-            
-            // Check if there are messages to send
+
+            if (client->isDisconnected()) {
+                std::cout << "Client " << client_fd << " marked for disconnection" << std::endl;
+
+                if (message.command == "QUIT") {
+                    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+                        if (it->second != client && !it->second->getSendQueue().empty()) {
+                            handle_client_send(it->first);
+                        }
+                    }
+                }
+
+                remove_client(client_fd);
+                return;
+            }
+
             if (!client->getSendQueue().empty()) {
                 std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
-                // Force send immediately
                 handle_client_send(client_fd);
             }
         } else {
@@ -445,6 +458,8 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Invite();
     } else if (command == "KICK") {
         return new Kick();
+    } else if (command == "QUIT") {
+        return new Quit();
     }
     return NULL;
 }
