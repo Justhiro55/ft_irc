@@ -108,3 +108,11 @@ class Kick : public AbstractCommand {
 		void executeCmd();
 };
 
+class Quit : public AbstractCommand {
+	public:
+		Quit();
+		~Quit();
+
+		void executeCmd();
+};
+

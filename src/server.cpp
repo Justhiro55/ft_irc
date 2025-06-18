@@ -420,6 +420,26 @@ void IRCServer::process_commands(int client_fd) {
             command->executeCmd();
             delete command;
 
+            if (client->isDisconnected()) {
+                std::cout << "Client " << client_fd << " marked for disconnection" << std::endl;
+
+                if (message.command == "QUIT") {
+                    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+                        if (it->second != client && !it->second->getSendQueue().empty()) {
+                            handle_client_send(it->first);
+                        }
+                    }
+                }
+
+                remove_client(client_fd);
+                return;
+            }
+
+            if (!client->getSendQueue().empty()) {
+                std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
+                handle_client_send(client_fd);
+            }
+          
         } else {
             std::cout << "Unknown command: " << message.command << std::endl;
         }
@@ -451,6 +471,8 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Notice();
     } else if (command == "PART") {
         return new Part();
+    } else if (command == "QUIT") {
+        return new Quit();
     }
     return NULL;
 }

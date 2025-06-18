@@ -168,3 +168,8 @@ std::vector<Client*> Channel::getClients() const {
 	}
 	return clients;
 }
+
+void Channel::removeClient(Client *client) {
+	members.erase(client);
+}
+
