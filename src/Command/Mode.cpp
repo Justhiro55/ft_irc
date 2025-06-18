@@ -168,6 +168,11 @@ std::string Mode::setModes(Channel *target)
 				++mode_params_it;
 			}
 			else {
+				if (mode_params_it == message.params.end())
+				{
+					sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
+					return applied_modes;
+				}
 				target->setMemberMode(*mode_params_it, 'v');
 				++mode_params_it;
 			}
