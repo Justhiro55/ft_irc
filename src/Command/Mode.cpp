@@ -166,10 +166,11 @@ std::string Mode::setModes(Channel *target)
 				}
 				target->setMemberMode(*mode_params_it, 'o');
 				++mode_params_it;
-				applied_modes.append("o");
 			}
-			else
+			else {
 				target->setMemberMode(*mode_params_it, 'v');
+				++mode_params_it;
+			}
 
 			applied_modes.append("o");
 		}
