@@ -155,9 +155,6 @@ void IRCServer::handle_new_connection() {
 
     int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
     if (client_fd < 0) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("accept() failed");
-        }
         return;
     }
 
@@ -248,10 +245,7 @@ void IRCServer::handle_client_data(int client_fd) {
     ssize_t bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
 
     if (bytes_received < 0) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("recv() failed");
-            remove_client(client_fd);
-        }
+        remove_client(client_fd);
         return;
     }
 
@@ -366,13 +360,7 @@ void IRCServer::handle_client_send(int client_fd) {
         ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
 
         if (bytes_sent < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                break;
-            } else {
-                perror("send() failed");
-                remove_client(client_fd);
-                return;
-            }
+            break;
         } else if (bytes_sent < (ssize_t)message.length()) {
             // 一部送信 - 残りのデータを更新
             std::string remaining = message.substr(bytes_sent);
@@ -451,7 +439,12 @@ void IRCServer::process_commands(int client_fd) {
                 if (message.command == "QUIT") {
                     for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
                         if (it->second != client && !it->second->getSendQueue().empty()) {
-                            handle_client_send(it->first);
+                            for (size_t i = 0; i < poll_fds.size(); ++i) {
+                                if (poll_fds[i].fd == it->first) {
+                                    poll_fds[i].events |= POLLOUT;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -462,9 +455,13 @@ void IRCServer::process_commands(int client_fd) {
 
             if (!client->getSendQueue().empty()) {
                 std::cout << "Messages in send queue: " << client->getSendQueue().size() << std::endl;
-                handle_client_send(client_fd);
+                for (size_t i = 0; i < poll_fds.size(); ++i) {
+                    if (poll_fds[i].fd == client_fd) {
+                        poll_fds[i].events |= POLLOUT;
+                        break;
+                    }
+                }
             }
-          
         } else {
             std::cout << "Unknown command: " << message.command << std::endl;
         }
