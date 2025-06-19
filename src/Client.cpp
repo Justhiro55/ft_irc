@@ -170,6 +170,15 @@ std::vector<Channel*>& Client::getChannels() {
     return this->join_channels;
 }
 
+void Client::removeChannel(Channel *channel) {
+    for (std::vector<Channel *>::iterator it = join_channels.begin(); it != join_channels.end(); ++it) {
+        if (*it == channel) {
+            it = join_channels.erase(it);
+            return;
+        }
+    }
+}
+
 const std::string& Client::getHostname() const {
     return this->ip;
 }

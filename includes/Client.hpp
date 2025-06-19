@@ -85,5 +85,6 @@ class Client {
 		void clearChannels();
 		void addChannel(Channel* channel);
 		std::vector<Channel*>& getChannels();
+		void removeChannel(Channel *channel);
 		const std::string& getHostname() const;
 };
