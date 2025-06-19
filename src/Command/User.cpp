@@ -20,6 +20,7 @@ void User::executeCmd() {
 
 	if (message.params.size() != 4) {
 		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "USER") + "\r\n");
+		this->executer->setDisconnected(true);
 		return ;
 	}
 
@@ -27,6 +28,7 @@ void User::executeCmd() {
 	if (message.params[0].empty() || message.params[1].empty() || 
 		message.params[2].empty() || message.params[3].empty()) {
 		this->sendToExecuter(ERR_NEEDMOREPARAMS(nick, "USER") + "\r\n");
+		this->executer->setDisconnected(true);
 		return ;
 	}
 
