@@ -71,9 +71,9 @@ Channel* ServerData::getChannelByName(std::string &name) {
 	return NULL;
 }
 
-void ServerData::removeChannel(Channel *channel) {
+void ServerData::removeChannel(Channel *target) {
 	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); ++it) {
-		if (*it == channel) {
+		if (*it == target) {
 			delete *it;
 			channels.erase(it);
 			break;

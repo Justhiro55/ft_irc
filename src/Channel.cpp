@@ -175,3 +175,6 @@ void Channel::removeClient(Client *client) {
 	members.erase(client);
 }
 
+size_t Channel::members_size() {
+	return this->members.size();
+}

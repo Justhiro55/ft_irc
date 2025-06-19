@@ -39,9 +39,14 @@ void Part::executeCmd() {
 			if (params_size == 1)
 				sendToClients(channel->getClients(), MSG_PART_DEFAULT(executer->getNickname(), executer->getUsername(), executer->getHost(),
 					target));
-			else
+			else {
 				sendToClients(channel->getClients(), MSG_PART_REASON(executer->getNickname(), executer->getUsername(), executer->getHost(),
 					target, params[1]));
+				if (!channel->members_size()) {
+					serverData->removeChannel(channel);
+					channel = NULL;
+				}
+			}
 		}
 		else
 			sendToExecuter(ERR_NOSUCHCHANNEL(executer->getNickname(), target) + "\r\n");

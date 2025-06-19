@@ -23,7 +23,6 @@ class ServerData {
 		void setChannel(Channel *channel);
 		void setPassword(std::string password);
 		void removeClient(Client *client);
-		void removeChannel(Channel *channel);
 
 		bool	verifyPassword(std::string password);
 
@@ -31,6 +30,7 @@ class ServerData {
 		Client	*getClientByNickname(std::string &nick);
 
 		Channel	*getChannelByName(std::string &name);
+		void removeChannel(Channel *target);
 
 		void enablePollOut(int client_fd);
 };

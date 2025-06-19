@@ -98,17 +98,25 @@ void Join::executeCmd() {
 			channel->setVoice(executer);
 			executer->addChannel(channel);
 		}
-		
-		// Send JOIN confirmation to the user
+
+		// Send JOIN confirmation to the user	
 		std::string join_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() + " JOIN " + it->first + "\r\n";
-		sendToExecuter(join_msg);
+		std::vector<Client *> sendingClients = channel->getClients();
+		sendToClients(channel->getClients(), join_msg);
 		
 		// Send channel topic if exists
 		// For now, assume no topic is set
-		sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :No topic is set\r\n");
+		std::string topic = channel->getTopic();
+		if (topic.empty())
+			sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :No topic is set\r\n");
+		else
+			sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :" +  + "\r\n");
 		
-		// Send member list (RPL_NAMREPLY)
+		// Send member list (RPL_NAMREPLY)　//TODO
 		std::string member_list = "353 " + executer->getNickname() + " = " + it->first + " :";
+		for (std::vector<Client *>::iterator i = sendingClients.begin(); i != sendingClients.end(); ++i){
+			member_list.append( ' '  + ((*i)->getNickname()));
+		}
 		member_list += executer->getNickname(); // Add self to list
 		sendToExecuter(member_list + "\r\n");
 		
