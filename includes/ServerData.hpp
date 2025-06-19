@@ -23,6 +23,7 @@ class ServerData {
 		void setChannel(Channel *channel);
 		void setPassword(std::string password);
 		void removeClient(Client *client);
+		void removeChannel(Channel *channel);
 
 		bool	verifyPassword(std::string password);
 

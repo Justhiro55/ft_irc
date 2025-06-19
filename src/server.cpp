@@ -106,10 +106,17 @@ void IRCServer::start() {
 }
 
 void IRCServer::stop() {
-    // Close all client connections
     for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
-        close(it->second->getClientFd());
-        delete it->second;
+        Client* client = it->second;
+
+        std::vector<Channel*> clientChannels = client->getChannels();
+        for (size_t i = 0; i < clientChannels.size(); i++) {
+            clientChannels[i]->removeClient(client);
+        }
+        client->clearChannels();
+
+        close(client->getClientFd());
+        delete client;
     }
     clients.clear();
     poll_fds.clear();
@@ -199,6 +206,24 @@ void IRCServer::remove_client(int client_fd) {
     }
 
     Client* client = it->second;
+
+    std::vector<Channel*> clientChannels = client->getChannels();
+    for (size_t i = 0; i < clientChannels.size(); i++) {
+        Channel* channel = clientChannels[i];
+
+        std::string quit_msg = ":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getIp() +
+                              " QUIT :Client disconnected" + "\r\n";
+
+        channel->sendToMembers(quit_msg, client->getNickname());
+
+        channel->removeClient(client);
+
+        if (channel->countMembers() == 0) {
+            serverData->removeChannel(channel);
+        }
+    }
+
+    client->clearChannels();
 
     // Remove ServerData
     serverData->removeClient(client);

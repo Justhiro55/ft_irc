@@ -143,9 +143,11 @@ bool Channel::hasMode(unsigned short mode) {
 
 void Channel::sendToMembers(const std::string &reply, const std::string &excluded_nick) {
 	for (std::map<Client*, unsigned char>::iterator it = members.begin(); it != members.end(); ++it) {
-			if (it->first->getNickname() == excluded_nick)
-				continue;
-			it->first->pushToSendQueue(reply);
+		if (it->first->isDisconnected())
+			continue;
+		if (it->first->getNickname() == excluded_nick)
+			continue;
+		it->first->pushToSendQueue(reply);
 	}
 }
 

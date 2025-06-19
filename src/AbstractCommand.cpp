@@ -35,7 +35,7 @@ void AbstractCommand::sendToExecuter(const std::string &reply) {
 }
 
 void AbstractCommand::sendToClient(Client *client, const std::string &reply) {
-	if (reply.empty())
+	if (reply.empty() || !client || client->isDisconnected())
 		return ;
 	serverData->enablePollOut(client->getClientFd());
 	client->pushToSendQueue(reply);

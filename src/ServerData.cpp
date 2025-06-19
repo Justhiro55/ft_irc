@@ -71,6 +71,16 @@ Channel* ServerData::getChannelByName(std::string &name) {
 	return NULL;
 }
 
+void ServerData::removeChannel(Channel *channel) {
+	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); ++it) {
+		if (*it == channel) {
+			delete *it;
+			channels.erase(it);
+			break;
+		}
+	}
+}
+
 void ServerData::enablePollOut(int client_fd) {
     for (size_t i = 0; i < this->poll_fds.size(); ++i) {
         if (poll_fds[i].fd == client_fd) {
