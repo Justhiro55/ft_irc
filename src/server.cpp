@@ -141,10 +141,8 @@ void IRCServer::handle_new_connection() {
             std::string client_ip = inet_ntoa(client_addr.sin_addr);
             (void)ntohs(client_addr.sin_port);
 
-            std::cout << "Connection limit reached." << std::endl;
+            std::cout << "Connection limit reached. Rejecting connection from " << client_ip << std::endl;
 
-            const char* error_msg = "ERROR :Server full\r\n";
-            send(client_fd, error_msg, strlen(error_msg), 0);
             close(client_fd);
         }
         return;
