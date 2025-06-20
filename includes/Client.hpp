@@ -11,6 +11,8 @@
 #include <sstream>
 #include <utility>
 #include "map"
+#include <algorithm>
+#include <climits>
 
 #define USER_MODE_OPERATOR	(1 << 0)   // 0001   +o (オペレーター権限付与)
 

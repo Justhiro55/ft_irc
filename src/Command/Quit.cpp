@@ -51,8 +51,10 @@ void Quit::executeCmd() {
 	for (size_t i = 0; i < channels.size(); i++) {
 		channels[i]->removeClient(executer);
 		if (!channels[i]->members_size())
+		{
 			serverData->removeChannel(channels[i]);
 			channels[i] = NULL;
+		}
 	}
 
 	executer->clearChannels();
