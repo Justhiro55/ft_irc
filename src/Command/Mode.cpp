@@ -37,7 +37,7 @@ void Mode::executeCmd()
 		std::string applied_modes = setModes(channel);
 		if (applied_modes.empty() || applied_modes.size() == 1)
 			return;
-		sendToClients(channel->getClients(), RPL_CHANNELMODECHANGE(executer->getNickname(), executer->getUsername(), executer->getHost(), channel_name, applied_modes) + "\r\n");
+		sendToClients(channel->getClients(), RPL_CHANNELMODECHANGE(executer->getNickname(), executer->getUsername(), executer->getHostname(), channel_name, applied_modes) + "\r\n");
 	}
 	else
 	{

@@ -55,7 +55,7 @@ void Privmsg::executeCmd()
 			std::vector<Client*>::iterator it = std::find(sendingClients.begin(), sendingClients.end(), executer);
 			if (it != sendingClients.end())
 				sendingClients.erase(it);
-			sendToClients(sendingClients, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(), executer->getHost(),
+			sendToClients(sendingClients, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(), executer->getHostname(),
 											   target, text));
 		}
 		else
@@ -66,7 +66,7 @@ void Privmsg::executeCmd()
 				return ;
 			}
 			sendToClient(client, MSG_PRIVMSG(executer->getNickname(), executer->getUsername(),
-											 executer->getHost(), target, text));
+											 executer->getHostname(), target, text));
 		}
 	}
 }

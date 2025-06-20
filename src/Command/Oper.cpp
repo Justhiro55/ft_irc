@@ -12,10 +12,10 @@ void Oper::executeCmd() {
 	size_t params_size = params.size();
 
 	if (params_size != 2)
-		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Privmsg") + "\r\n");
+		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "OPER") + "\r\n");
 	
 	if (params[0] != OPER_NAME || params[1] != OPER_PASSWORD)
-		return sendToExecuter(ERR_PASSWDMISMATCH(executer->getNickname()));
+		return sendToExecuter(ERR_PASSWDMISMATCH(executer->getNickname()) + "\r\n");
 	if (executer->hasMode(USER_MODE_OPERATOR))
 		return sendToExecuter(RPL_YOUREOPER(executer->getNickname()) + "\r\n");
 	executer->setMode(USER_MODE_OPERATOR);

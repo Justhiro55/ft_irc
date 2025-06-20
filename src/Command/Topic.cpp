@@ -45,7 +45,7 @@ void Topic::executeCmd() {
 			channel->clearTopic();
 		else
 			channel->setTopic(params[1]);
-		return sendToClients(channel->getClients(), MSG_TOPIC(executer->getNickname(), executer->getHost(), executer->getHost(),
+		return sendToClients(channel->getClients(), MSG_TOPIC(executer->getNickname(), executer->getUsername(), executer->getHostname(),
 			channel_name,  params[1]));
 	}
 	return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
