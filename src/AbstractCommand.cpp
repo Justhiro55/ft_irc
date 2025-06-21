@@ -62,7 +62,7 @@ void AbstractCommand::sendWelcomeMessages() {
 	std::string welcome = RPL_WELCOME(nick, user, host) + "\r\n";
 	std::string yourhost = RPL_YOURHOST(nick, "ft_irc", "1.0") + "\r\n";
 	std::string created = RPL_CREATED(nick, "Today") + "\r\n";
-	std::string myinfo = RPL_MYINFO(nick, "ft_irc", "1.0", "o", "itkol") + "\r\n"; // Todo: usermode, channnel mode 仮置き
+	std::string myinfo = RPL_MYINFO(nick, "ft_irc", "1.0", "o", "tkol") + "\r\n"; // Todo: usermode, channnel mode 仮置き
 
 	this->sendToExecuter(welcome);
 	this->sendToExecuter(yourhost);

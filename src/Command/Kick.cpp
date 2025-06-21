@@ -56,13 +56,17 @@ void Kick::executeCmd() {
 		return;
 	}
 
-	channel->unsetMember(target_client);
-
 	std::string kick_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() +
 	                       " KICK " + channel_name + " " + target_nick + " :" + reason + "\r\n";
 
-	sendToExecuter(kick_msg);
-	target_client->pushToSendQueue(kick_msg);
+	channel->sendToMembers(kick_msg, "");
 
-	channel->sendToMembers(kick_msg, executer->getNickname() + " " + target_nick);
+	std::vector<Client*> channel_members = channel->getClients();
+	for (size_t i = 0; i < channel_members.size(); i++) {
+		if (!channel_members[i]->isDisconnected()) {
+			serverData->enablePollOut(channel_members[i]->getClientFd());
+		}
+	}
+
+	channel->unsetMember(target_client);
 }

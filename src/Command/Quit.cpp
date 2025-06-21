@@ -18,6 +18,9 @@ void Quit::executeCmd() {
 
 	for (size_t i = 0; i < executer->getChannels().size(); i++) {
 		Channel* channel = executer->getChannels()[i];
+		if (!this->serverData->isValidChannel(channel)) {
+			continue;
+		}
 		channels.push_back(channel);
 
 		// チャンネル内の全クライアント取得

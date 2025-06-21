@@ -53,4 +53,5 @@ void Invite::executeCmd() {
 
 	std::string invite_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() + " INVITE " + target_nick + " " + channel_name + "\r\n";
 	target_client->pushToSendQueue(invite_msg);
+	serverData->enablePollOut(target_client->getClientFd());
 }
