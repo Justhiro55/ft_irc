@@ -499,6 +499,8 @@ AbstractCommand* IRCServer::createCommand(const std::string& command) {
         return new Part();
     } else if (command == "QUIT") {
         return new Quit();
+    } else if (command == "PING") {
+        return new Ping();
     }
     return NULL;
 }

@@ -116,3 +116,10 @@ class Quit : public AbstractCommand {
 		void executeCmd();
 };
 
+class Ping : public AbstractCommand {
+	public:
+		Ping();
+		~Ping();
+
+		void executeCmd();
+};
