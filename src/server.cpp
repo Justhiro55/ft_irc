@@ -111,6 +111,9 @@ void IRCServer::stop() {
 
         std::vector<Channel*> clientChannels = client->getChannels();
         for (size_t i = 0; i < clientChannels.size(); i++) {
+            if (!serverData->isValidChannel(clientChannels[i])) {
+                continue;
+            }
             clientChannels[i]->removeClient(client);
         }
         client->clearChannels();

@@ -31,6 +31,7 @@ class ServerData {
 
 		Channel	*getChannelByName(std::string &name);
 		void removeChannel(Channel *target);
+		bool isValidChannel(Channel *channel);
 
 		void enablePollOut(int client_fd);
 };

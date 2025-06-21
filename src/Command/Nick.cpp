@@ -88,6 +88,9 @@ void Nick::executeCmd() {
 
 		std::vector<Channel*> user_channels = this->executer->getChannels();
 		for (size_t i = 0; i < user_channels.size(); i++) {
+			if (!this->serverData->isValidChannel(user_channels[i])) {
+				continue;
+			}
 			std::vector<Client*> channel_members = user_channels[i]->getClients();
 			for (size_t j = 0; j < channel_members.size(); j++) {
 				if (channel_members[j]->getNickname() != old_nick && !channel_members[j]->isDisconnected()) {

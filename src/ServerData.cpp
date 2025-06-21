@@ -81,6 +81,18 @@ void ServerData::removeChannel(Channel *target) {
 	}
 }
 
+bool ServerData::isValidChannel(Channel *channel) {
+	if (channel == NULL)
+		return false;
+
+	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); ++it) {
+		if (*it == channel) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void ServerData::enablePollOut(int client_fd) {
     for (size_t i = 0; i < this->poll_fds.size(); ++i) {
         if (poll_fds[i].fd == client_fd) {
