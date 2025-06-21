@@ -97,6 +97,8 @@ void Join::executeCmd() {
 			}
 			channel->setVoice(executer);
 			executer->addChannel(channel);
+			if (channel->hasMode(MODE_INVITE))
+				channel->removeInvite(executer->getNickname());
 		}
 
 		// Send JOIN confirmation to the user	
@@ -110,7 +112,7 @@ void Join::executeCmd() {
 		if (topic.empty())
 			sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :No topic is set\r\n");
 		else
-			sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :" +  + "\r\n");
+			sendToExecuter("331 " + executer->getNickname() + " " + it->first + " :" + topic + "\r\n");
 		
 		// Send member list (RPL_NAMREPLY)　//TODO
 		std::string member_list = "353 " + executer->getNickname() + " = " + it->first + " :";

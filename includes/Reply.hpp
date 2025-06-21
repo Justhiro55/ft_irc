@@ -60,7 +60,7 @@
     " PART " + (channel) + " :" + (msg) + "\r\n")
 
 // Privmsg/NOTICE
-#define ERR_NORECIPIENT(command) std::string("411 ") + ":No recipient given " + command
+#define ERR_NORECIPIENT(nick, command) std::string("411 ") + nick + " :No recipient given " + command
 #define ERR_NOTEXTTOSEND(nick)   std::string("412 ") + nick + " :No text to send"
 #define ERR_TOOMANYTARGETS(nick, target) std::string("403 ") + nick + " " + target + " :Duplicate recipients. No message delivered"
 

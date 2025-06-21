@@ -57,7 +57,7 @@ Message tokenizeMessage(std::string &request) {
 			if (!trailing.empty()) {
 				trimCRLF(trailing);
 			}
-
+			message.trailing = true;
 			message.params.push_back(trailing);
 			break;
 		} else {

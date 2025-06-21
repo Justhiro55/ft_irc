@@ -59,7 +59,6 @@ void Kick::executeCmd() {
 	std::string kick_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() +
 	                       " KICK " + channel_name + " " + target_nick + " :" + reason + "\r\n";
 
-	channel->sendToMembers(kick_msg, "");
 
 	std::vector<Client*> channel_members = channel->getClients();
 	for (size_t i = 0; i < channel_members.size(); i++) {
@@ -69,4 +68,6 @@ void Kick::executeCmd() {
 	}
 
 	channel->unsetMember(target_client);
+	sendToClient(target_client, kick_msg);
+	sendToClients(channel->getClients(), kick_msg);
 }

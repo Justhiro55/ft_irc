@@ -15,7 +15,7 @@ void Privmsg::executeCmd()
 	if (params_size < 1)
 		return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Privmsg") + "\r\n");
 	if (params_size == 1 && message.trailing)
-		return sendToExecuter(ERR_NORECIPIENT(message.command) + "\r\n");
+		return sendToExecuter(ERR_NORECIPIENT(executer->getNickname(), message.command) + "\r\n");
 	else if (params_size == 1 && !message.trailing)
 		return sendToExecuter(ERR_NOTEXTTOSEND(executer->getNickname()) + "\r\n");
 
@@ -23,6 +23,10 @@ void Privmsg::executeCmd()
 	std::stringstream ss(params.front());
 	std::string target;
 	std::vector<std::string> targets;
+
+	if (text.size() > 400 || text.size() < 1)
+		return sendToExecuter(ERR_NOTEXTTOSEND(executer->getNickname()) + "\r\n");
+
 	while (std::getline(ss, target, ','))
 	{
 		targets.push_back(target);

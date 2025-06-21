@@ -40,6 +40,12 @@ void Channel::addInvite_list(const std::string &invitee) {
 		invite_list.push_back(invitee);
 	}
 }
+void Channel::removeInvite(const std::string &invitee) {
+	std::vector<std::string>::iterator it = std::find(invite_list.begin(), invite_list.end(), invitee);
+	if (it != invite_list.end()) {
+		invite_list.erase(it);
+	}
+}
 
 bool Channel::isInvited(const std::string &nickname) const {
 	return std::find(invite_list.begin(), invite_list.end(), nickname) != invite_list.end();
