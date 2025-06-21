@@ -50,6 +50,7 @@ class Channel {
 		void setVoice(Client *member);
 
 		void addInvite_list(const std::string &invitee);
+		void removeInvite(const std::string &invitee);
 		bool isInvited(const std::string &nickname) const;
 
 		void setLimit(size_t limit);
