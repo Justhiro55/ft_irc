@@ -44,8 +44,7 @@ void IRCServer::setup_server() {
         die_with_error("listen() failed", server_fd);
 
     // non-blocking mode
-    int flags = fcntl(server_fd, F_GETFL, 0);
-    if (fcntl(server_fd, F_SETFL, flags | O_NONBLOCK) < 0)
+    if (fcntl(server_fd, F_SETFL, O_NONBLOCK) < 0)
         die_with_error("fcntl() failed", server_fd);
 
     // Add server socket to poll array
@@ -163,8 +162,7 @@ void IRCServer::handle_new_connection() {
     }
 
     // non-blocking mode
-    int flags = fcntl(client_fd, F_GETFL, 0);
-    if (fcntl(client_fd, F_SETFL, flags | O_NONBLOCK) < 0) {
+    if (fcntl(client_fd, F_SETFL, O_NONBLOCK) < 0) {
         perror("fcntl() failed for client socket");
         close(client_fd);
         return;
