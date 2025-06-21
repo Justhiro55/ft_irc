@@ -56,13 +56,10 @@ void Kick::executeCmd() {
 		return;
 	}
 
-	channel->unsetMember(target_client);
-
 	std::string kick_msg = ":" + executer->getNickname() + "!" + executer->getUsername() + "@" + executer->getIp() +
 	                       " KICK " + channel_name + " " + target_nick + " :" + reason + "\r\n";
 
-	sendToExecuter(kick_msg);
-	target_client->pushToSendQueue(kick_msg);
+	channel->sendToMembers(kick_msg, "");
 
-	channel->sendToMembers(kick_msg, executer->getNickname() + " " + target_nick);
+	channel->unsetMember(target_client);
 }
