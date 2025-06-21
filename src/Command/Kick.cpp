@@ -61,5 +61,12 @@ void Kick::executeCmd() {
 
 	channel->sendToMembers(kick_msg, "");
 
+	std::vector<Client*> channel_members = channel->getClients();
+	for (size_t i = 0; i < channel_members.size(); i++) {
+		if (!channel_members[i]->isDisconnected()) {
+			serverData->enablePollOut(channel_members[i]->getClientFd());
+		}
+	}
+
 	channel->unsetMember(target_client);
 }
