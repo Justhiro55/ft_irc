@@ -47,7 +47,11 @@ void Invite::executeCmd() {
 		return;
 	}
 
-	channel->addInvite_list(target_nick);
+	if (channel->isInvited(target_nick)) {
+		channel->removeInvite(target_nick);
+	} else {
+		channel->addInvite_list(target_nick);
+	}
 
 	sendToExecuter(RPL_INVITING(executer->getNickname(), channel_name, target_nick) + "\r\n");
 
