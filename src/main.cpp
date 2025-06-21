@@ -4,6 +4,11 @@
 // signal handling
 IRCServer* g_server = NULL;
 
+__attribute__((destructor)) static void destructor()
+{
+    system("leaks -q a.out");
+}
+
 void signal_handler(int signum) {
     std::cout << "\nShutting down server (signal: " << signum << ")..." << std::endl;
     if (g_server) {

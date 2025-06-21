@@ -49,14 +49,14 @@ void Notice::executeCmd() {
 			std::vector<Client*>::iterator it = std::find(sendingClients.begin(), sendingClients.end(), executer);
 			if (it != sendingClients.end())
 				sendingClients.erase(it);
-			sendToClients(sendingClients, MSG_NOTICE(executer->getNickname(), executer->getUsername(), executer->getHost(),
+			sendToClients(sendingClients, MSG_NOTICE(executer->getNickname(), executer->getUsername(), executer->getHostname(),
 				target, text));
 		} else {
 			Client *client = serverData->getClientByNickname(target);
 			if (client == NULL)
 				return sendToExecuter(ERR_NOSUCHNICK(target) + "\r\n");
 			sendToClient(client, MSG_NOTICE(executer->getNickname(), executer->getUsername(),
-				executer->getHost(), target, text));
+				executer->getHostname(), target, text));
 		}
 	}
 }

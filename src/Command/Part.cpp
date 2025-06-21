@@ -35,15 +35,15 @@ void Part::executeCmd() {
 				sendToExecuter(ERR_NOTONCHANNEL(executer->getNickname(), target) + "\r\n");
 				continue;
 			}
-			channel->unsetMember(executer);
-			executer->removeChannel(channel);
 			if (params_size == 1)
-				sendToClients(channel->getClients(), MSG_PART_DEFAULT(executer->getNickname(), executer->getUsername(), executer->getHost(),
+				sendToClients(channel->getClients(), MSG_PART_DEFAULT(executer->getNickname(), executer->getUsername(), executer->getHostname(),
 					target));
 			else {
-				sendToClients(channel->getClients(), MSG_PART_REASON(executer->getNickname(), executer->getUsername(), executer->getHost(),
+				sendToClients(channel->getClients(), MSG_PART_REASON(executer->getNickname(), executer->getUsername(), executer->getHostname(),
 					target, params[1]));
 			}
+			channel->unsetMember(executer);
+			executer->removeChannel(channel);
 			if (!channel->members_size()) {
 				serverData->removeChannel(channel);
 				channel = NULL;

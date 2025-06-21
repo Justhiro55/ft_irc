@@ -22,7 +22,8 @@ SRC = main.cpp \
 	    Command/Privmsg.cpp \
 	    Command/Notice.cpp\
 	    Command/Oper.cpp \
-      Command/Quit.cpp
+      Command/Quit.cpp \
+	  Command/Ping.cpp
 
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))

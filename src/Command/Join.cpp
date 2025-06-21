@@ -117,7 +117,6 @@ void Join::executeCmd() {
 		for (std::vector<Client *>::iterator i = sendingClients.begin(); i != sendingClients.end(); ++i){
 			member_list.append( ' '  + ((*i)->getNickname()));
 		}
-		member_list += executer->getNickname(); // Add self to list
 		sendToExecuter(member_list + "\r\n");
 		
 		// Send end of names
@@ -137,7 +136,7 @@ bool isValidChannelName(const std::string& channel_name) {
     for (size_t i = 1; i < channel_name.length(); ++i) {
         char c = channel_name[i];
 
-        if (isspace(c) || c == 0x07 /* BEL */ || c == ',' )
+        if (c == ':' || isspace(c) || c == 0x07 /* BEL */ || c == ',' )
             return false;
 
         if (c < 0x21 || c > 0x7E)
