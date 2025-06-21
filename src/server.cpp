@@ -155,9 +155,6 @@ void IRCServer::handle_new_connection() {
 
     int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
     if (client_fd < 0) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("accept() failed");
-        }
         return;
     }
 
@@ -247,10 +244,7 @@ void IRCServer::handle_client_data(int client_fd) {
     ssize_t bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
 
     if (bytes_received < 0) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("recv() failed");
-            remove_client(client_fd);
-        }
+        remove_client(client_fd);
         return;
     }
 
@@ -365,13 +359,8 @@ void IRCServer::handle_client_send(int client_fd) {
         ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0);
 
         if (bytes_sent < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                break;
-            } else {
-                perror("send() failed");
-                remove_client(client_fd);
-                return;
-            }
+            remove_client(client_fd);
+            return;
         } else if (bytes_sent < (ssize_t)message.length()) {
             // 一部送信 - 残りのデータを更新
             std::string remaining = message.substr(bytes_sent);
