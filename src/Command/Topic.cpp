@@ -40,6 +40,8 @@ void Topic::executeCmd() {
 
 		if (channel->hasMode(MODE_TOPICLOCK) && !channel->isOperatorMember(executer->getNickname()))
 			return sendToExecuter(ERR_CHANOPRIVSNEEDED(executer->getNickname(), channel_name) + "\r\n");
+		if (params[1].size() > 30)
+			return sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), "Topic") + "\r\n");
 
 		if (message.trailing && params[1].empty() && params_size == 2)
 			channel->clearTopic();

@@ -73,8 +73,8 @@ std::string Mode::setModes(Channel *target)
 	else if (message.params[1][0] == '-' && message.params[1].size() > 1)
 		plus_flag = false;
 	else {
-		sendToExecuter(ERR_UNKNOWNMODE(message.params[1], target->getName()) + "\r\n");
-		return "";
+		sendToExecuter(ERR_NEEDMOREPARAMS(executer->getNickname(), message.command) + "\r\n");
+		return applied_modes;
 	}
 	applied_modes.append(1, message.params[1][0]);
 	message.params[1].erase(0, 1); // これよくないね
