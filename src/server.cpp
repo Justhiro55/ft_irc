@@ -289,6 +289,7 @@ void IRCServer::parse_messages(int client_fd) {
                       << " bytes) from client " << client_fd << std::endl;
             send_to_client(client_fd, "ERROR :Message too long\r\n");
             buffer.erase(0, pos + 2);
+            pos = findLineEnd(buffer);
             continue;
         }
 
